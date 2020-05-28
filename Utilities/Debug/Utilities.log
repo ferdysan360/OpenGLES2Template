@@ -1,0 +1,13 @@
+﻿  stdafx.cpp
+  TGA.cpp
+  MemoryOperators.cpp
+  MemoryManager.cpp
+  Math.cpp
+c:\users\ferdy\documents\gameloft\opengl es 2.0\opengles2template\utilities\math.cpp(10): warning C4244: 'return': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\ferdy\documents\gameloft\opengl es 2.0\opengles2template\utilities\math.cpp(104): warning C4244: 'return': conversion from 'double' to 'GLfloat', possible loss of data
+c:\users\ferdy\documents\gameloft\opengl es 2.0\opengles2template\utilities\math.cpp(208): warning C4244: 'return': conversion from 'double' to 'GLfloat', possible loss of data
+  esUtil_win.cpp
+  esUtil.cpp
+  esShader.cpp
+  Generating Code...
+  Utilities.vcxproj -> C:\Users\ferdy\Documents\Gameloft\OpenGL ES 2.0\OpenGLES2Template\Debug\Utilities.lib
