@@ -10,35 +10,52 @@
 
 
 Shaders		myShaders;
-Vertex		verticesData[3];
+Vertex		triangle1[3];
+Vertex		triangle2[3];
 
 int Init( ESContext *esContext )
 {
 	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
 
-	//triangle data
-	verticesData[0].pos = Vector3(  0.0,  0.5,  0.0 );
-	verticesData[1].pos = Vector3( -0.5, -0.5,  0.0 );
-	verticesData[2].pos = Vector3(  0.5, -0.5,  0.0 );
+	//triangle 1 data
+	triangle1[0].pos = Vector3( -0.5,  0.5,  0.0 );
+	triangle1[1].pos = Vector3( -1.0, -0.5,  0.0 );
+	triangle1[2].pos = Vector3(  0.0, -0.5,  0.0 );
+
+	//triangle 2 data
+	triangle2[0].pos = Vector3(0.5, 0.5, 0.0);
+	triangle2[1].pos = Vector3(0.0, -0.5, 0.0);
+	triangle2[2].pos = Vector3(1.0, -0.5, 0.0);
 
 	//creation of shaders and program 
 	myShaders.Init( "../Resources/Shaders/TriangleShaderVS.vs", "../Resources/Shaders/TriangleShaderFS.fs" );
 	return 0;
 }
 
-void Draw( ESContext *esContext )
+void DrawTwoTriangles( ESContext *esContext )
 {
 	glClear( GL_COLOR_BUFFER_BIT );
 
+	
+	GLuint vboId;
+	glGenBuffers(1, &vboId);
+	glBindBuffer(GL_ARRAY_BUFFER, vboId);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(triangle1) + sizeof(triangle2), 0, GL_STATIC_DRAW);
+	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(triangle1), triangle1);
+	glBufferSubData(GL_ARRAY_BUFFER, sizeof(triangle1), sizeof(triangle2), triangle2);
+	
 	glUseProgram( myShaders.GetProgram() );
 
 	if( myShaders.GetAttributes().position != -1 )
 	{
 		glEnableVertexAttribArray( myShaders.GetAttributes().position );
-		glVertexAttribPointer( myShaders.GetAttributes().position, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ), &verticesData );
+		glVertexAttribPointer( myShaders.GetAttributes().position, 3, GL_FLOAT, GL_FALSE, sizeof( Vertex ), 0);
 	}
 
-	glDrawArrays( GL_TRIANGLES, 0, 3 );
+	//glDrawElements(GL_TRIANGLES, 3, GL_UNSIGNED_INT, 0);
+	glDrawArrays( GL_TRIANGLES, 0, 6 );
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
 
 	eglSwapBuffers( esContext->eglDisplay, esContext->eglSurface );
 }
@@ -72,7 +89,7 @@ int _tmain( int argc, _TCHAR* argv[] )
 	if( Init( &esContext ) != 0 )
 		return 0;
 
-	esRegisterDrawFunc( &esContext, Draw );
+	esRegisterDrawFunc( &esContext, DrawTwoTriangles );
 	esRegisterUpdateFunc( &esContext, Update );
 	esRegisterKeyFunc( &esContext, Key );
 
