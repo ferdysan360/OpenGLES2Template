@@ -47,6 +47,8 @@ int Init( ESContext *esContext )
 	myShaders.Init( "../Resources/Shaders/TriangleShaderVS.vs", "../Resources/Shaders/TriangleShaderFS.fs" );
 
 	// Woman model load
+	Vertex *verticesData;
+	int *indicesData;
 	FILE *pFile;
 	errno_t err = fopen_s(&pFile, "../Resources/Models/Woman1.nfg", "r");
 	if (!err) {
@@ -57,7 +59,7 @@ int Init( ESContext *esContext )
 		fscanf_s(pFile, "NrVertices: %d", &verticesCount);
 		fgetc(pFile);
 
-		Vertex *verticesData = new Vertex[verticesCount];
+		verticesData = new Vertex[verticesCount];
 		for (int i = 0; i < verticesCount; i++) {
 			fscanf_s(pFile, "   %*d. pos:[%f, %f, %f]; norm:[%f, %f, %f]; binorm:[%f, %f, %f]; tgt:[%f, %f, %f]; uv:[%f, %f];",
 				&verticesData[i].pos.x, &verticesData[i].pos.y, &verticesData[i].pos.z, &verticesData[i].norm.x, &verticesData[i].norm.y,
@@ -65,26 +67,35 @@ int Init( ESContext *esContext )
 				&verticesData[i].tgt.x, &verticesData[i].tgt.y, &verticesData[i].tgt.z, &verticesData[i].uv.x, &verticesData[i].uv.y);
 			fgetc(pFile);
 		}
-		
-		cout << verticesData[12].pos.x << endl;
 
 		fscanf_s(pFile, "NrIndices: %d", &indicesCount);
 		fgetc(pFile);
 
-		int *indicesData = new int[indicesCount];
+		indicesData = new int[indicesCount];
 		int indicesPairs = indicesCount / 3;
 		for (int i = 0; i < indicesPairs; i++) {
 			fscanf_s(pFile, "   %*d.    %d,    %d,    %d", &indicesData[i*3], &indicesData[(i*3)+1], &indicesData[(i*3)+2]);
 			fgetc(pFile);
 		}
 
-		cout << indicesData[30] << endl;
-
 	}
 	else {
 		cout << "fail" << endl;
 	}
 	fclose(pFile);
+
+	GLuint vboId;
+	glGenBuffers(1, &vboId);
+	glBindBuffer(GL_ARRAY_BUFFER, vboId);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesData), verticesData, GL_STATIC_DRAW);
+
+	GLuint iboId;
+	glGenBuffers(1, &iboId);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
+	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicesData), indicesData, GL_STATIC_DRAW);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	return 0;
 }
@@ -230,7 +241,7 @@ int _tmain( int argc, _TCHAR* argv[] )
 
 	//esRegisterDrawFunc( &esContext, DrawTwoTriangles );
 	//esRegisterDrawFunc( &esContext, DrawSquare );
-	//esRegisterDrawFunc(&esContext, DrawSquareIBO);
+	esRegisterDrawFunc(&esContext, DrawSquareIBO);
 	esRegisterUpdateFunc( &esContext, Update );
 	esRegisterKeyFunc( &esContext, Key );
 

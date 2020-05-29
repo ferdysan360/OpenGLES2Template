@@ -1,5 +1,5 @@
 ﻿  NewTrainingFramework.cpp
-c:\users\ferdy\documents\gameloft\opengl es 2.0\opengles2template\newtrainingframework\newtrainingframework.cpp(53): warning C4101: 'indicesPair': unreferenced local variable
-c:\users\ferdy\documents\gameloft\opengl es 2.0\opengles2template\newtrainingframework\newtrainingframework.cpp(138): warning C4101: 'iboId': unreferenced local variable
+c:\users\ferdy\documents\gameloft\opengl es 2.0\opengles2template\newtrainingframework\newtrainingframework.cpp(55): warning C4101: 'indicesPair': unreferenced local variable
+c:\users\ferdy\documents\gameloft\opengl es 2.0\opengles2template\newtrainingframework\newtrainingframework.cpp(149): warning C4101: 'iboId': unreferenced local variable
   NewTrainingFramework.vcxproj -> C:\Users\ferdy\Documents\Gameloft\OpenGL ES 2.0\OpenGLES2Template\\BIN\NewTrainingFramework.exe
   NewTrainingFramework.vcxproj -> C:\Users\ferdy\Documents\Gameloft\OpenGL ES 2.0\OpenGLES2Template\\BIN\NewTrainingFramework.pdb (Full PDB)
