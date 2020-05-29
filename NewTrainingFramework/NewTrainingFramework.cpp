@@ -7,7 +7,11 @@
 #include "Shaders.h"
 #include "Globals.h"
 #include <conio.h>
-
+#include <stdio.h>
+#include <stdlib.h>
+#include <iostream>
+#include <string>
+using namespace std;
 
 Shaders		myShaders;
 Vertex		triangle1[3];
@@ -41,6 +45,47 @@ int Init( ESContext *esContext )
 
 	//creation of shaders and program 
 	myShaders.Init( "../Resources/Shaders/TriangleShaderVS.vs", "../Resources/Shaders/TriangleShaderFS.fs" );
+
+	// Woman model load
+	FILE *pFile;
+	errno_t err = fopen_s(&pFile, "../Resources/Models/Woman1.nfg", "r");
+	if (!err) {
+		int verticesCount, indicesCount, indicesPair;
+		verticesCount = 0;
+		indicesCount = 0;
+
+		fscanf_s(pFile, "NrVertices: %d", &verticesCount);
+		fgetc(pFile);
+
+		Vertex *verticesData = new Vertex[verticesCount];
+		for (int i = 0; i < verticesCount; i++) {
+			fscanf_s(pFile, "   %*d. pos:[%f, %f, %f]; norm:[%f, %f, %f]; binorm:[%f, %f, %f]; tgt:[%f, %f, %f]; uv:[%f, %f];",
+				&verticesData[i].pos.x, &verticesData[i].pos.y, &verticesData[i].pos.z, &verticesData[i].norm.x, &verticesData[i].norm.y,
+				&verticesData[i].norm.z, &verticesData[i].binorm.x, &verticesData[i].binorm.y, &verticesData[i].binorm.z,
+				&verticesData[i].tgt.x, &verticesData[i].tgt.y, &verticesData[i].tgt.z, &verticesData[i].uv.x, &verticesData[i].uv.y);
+			fgetc(pFile);
+		}
+		
+		cout << verticesData[12].pos.x << endl;
+
+		fscanf_s(pFile, "NrIndices: %d", &indicesCount);
+		fgetc(pFile);
+
+		int *indicesData = new int[indicesCount];
+		int indicesPairs = indicesCount / 3;
+		for (int i = 0; i < indicesPairs; i++) {
+			fscanf_s(pFile, "   %*d.    %d,    %d,    %d", &indicesData[i*3], &indicesData[(i*3)+1], &indicesData[(i*3)+2]);
+			fgetc(pFile);
+		}
+
+		cout << indicesData[30] << endl;
+
+	}
+	else {
+		cout << "fail" << endl;
+	}
+	fclose(pFile);
+
 	return 0;
 }
 
@@ -185,7 +230,7 @@ int _tmain( int argc, _TCHAR* argv[] )
 
 	//esRegisterDrawFunc( &esContext, DrawTwoTriangles );
 	//esRegisterDrawFunc( &esContext, DrawSquare );
-	esRegisterDrawFunc(&esContext, DrawSquareIBO);
+	//esRegisterDrawFunc(&esContext, DrawSquareIBO);
 	esRegisterUpdateFunc( &esContext, Update );
 	esRegisterKeyFunc( &esContext, Key );
 
