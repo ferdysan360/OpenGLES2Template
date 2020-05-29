@@ -19,6 +19,76 @@ Vertex		triangle2[3];
 Vertex		squareTriangle1[3];
 Vertex		squareTriangle2[3];
 
+class Model
+{	
+public:
+	GLuint m_VBO, m_IBO;
+	unsigned int m_indicesCount, m_verticesCount;
+	Model() {
+		;
+	}
+	~Model() {
+		;
+	}
+
+	void InitModel(char* filename) {
+		// Woman model load
+		Vertex* verticesData;
+		int* indicesData;
+		FILE* pFile;
+		errno_t err = fopen_s(&pFile, filename, "r");
+		if (!err) {
+			fscanf_s(pFile, "NrVertices: %d", &m_verticesCount);
+			fgetc(pFile);
+
+			verticesData = new Vertex[m_verticesCount];
+			for (int i = 0; i < m_verticesCount; i++) {
+				fscanf_s(pFile, "   %*d. pos:[%f, %f, %f]; norm:[%f, %f, %f]; binorm:[%f, %f, %f]; tgt:[%f, %f, %f]; uv:[%f, %f];",
+					&verticesData[i].pos.x, &verticesData[i].pos.y, &verticesData[i].pos.z, &verticesData[i].norm.x, &verticesData[i].norm.y,
+					&verticesData[i].norm.z, &verticesData[i].binorm.x, &verticesData[i].binorm.y, &verticesData[i].binorm.z,
+					&verticesData[i].tgt.x, &verticesData[i].tgt.y, &verticesData[i].tgt.z, &verticesData[i].uv.x, &verticesData[i].uv.y);
+				fgetc(pFile);
+			}
+
+			cout << verticesData[12].pos.x << endl;
+
+			fscanf_s(pFile, "NrIndices: %d", &m_indicesCount);
+			fgetc(pFile);
+
+			indicesData = new int[m_indicesCount];
+			int indicesPairs = m_indicesCount / 3;
+			for (int i = 0; i < indicesPairs; i++) {
+				fscanf_s(pFile, "   %*d.    %d,    %d,    %d", &indicesData[i * 3], &indicesData[(i * 3) + 1], &indicesData[(i * 3) + 2]);
+				fgetc(pFile);
+			}
+
+			cout << indicesData[30] << endl;
+
+			fclose(pFile);
+
+			glGenBuffers(1, &m_VBO);
+			glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(verticesData), verticesData, GL_STATIC_DRAW);
+
+			GLuint iboId;
+			glGenBuffers(1, &m_IBO);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicesData), indicesData, GL_STATIC_DRAW);
+
+			glBindBuffer(GL_ARRAY_BUFFER, 0);
+			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+			glEnable(GL_DEPTH_TEST);
+
+			cout << "success! Model loaded!" << endl;
+		}
+		else {
+			cout << "fail to load file" << endl;
+		}
+		
+	}
+};
+
 int Init( ESContext *esContext )
 {
 	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
@@ -45,57 +115,6 @@ int Init( ESContext *esContext )
 
 	//creation of shaders and program 
 	myShaders.Init( "../Resources/Shaders/TriangleShaderVS.vs", "../Resources/Shaders/TriangleShaderFS.fs" );
-
-	// Woman model load
-	Vertex *verticesData;
-	int *indicesData;
-	FILE *pFile;
-	errno_t err = fopen_s(&pFile, "../Resources/Models/Woman1.nfg", "r");
-	if (!err) {
-		int verticesCount, indicesCount, indicesPair;
-		verticesCount = 0;
-		indicesCount = 0;
-
-		fscanf_s(pFile, "NrVertices: %d", &verticesCount);
-		fgetc(pFile);
-
-		verticesData = new Vertex[verticesCount];
-		for (int i = 0; i < verticesCount; i++) {
-			fscanf_s(pFile, "   %*d. pos:[%f, %f, %f]; norm:[%f, %f, %f]; binorm:[%f, %f, %f]; tgt:[%f, %f, %f]; uv:[%f, %f];",
-				&verticesData[i].pos.x, &verticesData[i].pos.y, &verticesData[i].pos.z, &verticesData[i].norm.x, &verticesData[i].norm.y,
-				&verticesData[i].norm.z, &verticesData[i].binorm.x, &verticesData[i].binorm.y, &verticesData[i].binorm.z,
-				&verticesData[i].tgt.x, &verticesData[i].tgt.y, &verticesData[i].tgt.z, &verticesData[i].uv.x, &verticesData[i].uv.y);
-			fgetc(pFile);
-		}
-
-		fscanf_s(pFile, "NrIndices: %d", &indicesCount);
-		fgetc(pFile);
-
-		indicesData = new int[indicesCount];
-		int indicesPairs = indicesCount / 3;
-		for (int i = 0; i < indicesPairs; i++) {
-			fscanf_s(pFile, "   %*d.    %d,    %d,    %d", &indicesData[i*3], &indicesData[(i*3)+1], &indicesData[(i*3)+2]);
-			fgetc(pFile);
-		}
-
-	}
-	else {
-		cout << "fail" << endl;
-	}
-	fclose(pFile);
-
-	GLuint vboId;
-	glGenBuffers(1, &vboId);
-	glBindBuffer(GL_ARRAY_BUFFER, vboId);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(verticesData), verticesData, GL_STATIC_DRAW);
-
-	GLuint iboId;
-	glGenBuffers(1, &iboId);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
-	glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicesData), indicesData, GL_STATIC_DRAW);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
 	return 0;
 }
@@ -210,6 +229,12 @@ void DrawSquareIBO(ESContext* esContext)
 	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
 }
 
+void LoadModelTest()
+{
+	Model woman1;
+	woman1.InitModel("../Resources/Models/Woman1.nfg");
+}
+
 void Update( ESContext *esContext, float deltaTime )
 {
 
@@ -241,7 +266,8 @@ int _tmain( int argc, _TCHAR* argv[] )
 
 	//esRegisterDrawFunc( &esContext, DrawTwoTriangles );
 	//esRegisterDrawFunc( &esContext, DrawSquare );
-	esRegisterDrawFunc(&esContext, DrawSquareIBO);
+	//esRegisterDrawFunc(&esContext, DrawSquareIBO);
+	LoadModelTest();
 	esRegisterUpdateFunc( &esContext, Update );
 	esRegisterKeyFunc( &esContext, Key );
 
