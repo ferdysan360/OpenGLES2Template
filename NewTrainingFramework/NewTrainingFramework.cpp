@@ -14,10 +14,12 @@
 using namespace std;
 
 Shaders		myShaders;
+
 Vertex		triangle1[3];
 Vertex		triangle2[3];
 Vertex		squareTriangle1[3];
 Vertex		squareTriangle2[3];
+
 
 class Model
 {	
@@ -28,7 +30,8 @@ public:
 		;
 	}
 	~Model() {
-		;
+		glDeleteBuffers(1, &m_VBO);
+		glDeleteBuffers(1, &m_IBO);
 	}
 
 	void InitModel(char* filename) {
@@ -68,12 +71,11 @@ public:
 
 			glGenBuffers(1, &m_VBO);
 			glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(verticesData), verticesData, GL_STATIC_DRAW);
+			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * m_verticesCount, verticesData, GL_STATIC_DRAW);
 
-			GLuint iboId;
 			glGenBuffers(1, &m_IBO);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indicesData), indicesData, GL_STATIC_DRAW);
+			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * m_indicesCount, indicesData, GL_STATIC_DRAW);
 
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
@@ -89,10 +91,12 @@ public:
 	}
 };
 
+Model woman1;
+
 int Init( ESContext *esContext )
 {
 	glClearColor( 0.0f, 0.0f, 0.0f, 0.0f );
-
+	
 	//triangle 1 data
 	triangle1[0].pos = Vector3(-0.5, 0.5, 0.0);
 	triangle1[1].pos = Vector3(-1.0, -0.5, 0.0);
@@ -112,6 +116,9 @@ int Init( ESContext *esContext )
 	squareTriangle2[0].pos = Vector3(0.5, 0.5, 0.0);
 	squareTriangle2[1].pos = Vector3(-0.5, -0.5, 0.0);
 	squareTriangle2[2].pos = Vector3(0.5, -0.5, 0.0);
+	
+
+	woman1.InitModel("../Resources/Models/Woman1.nfg");
 
 	//creation of shaders and program 
 	myShaders.Init( "../Resources/Shaders/TriangleShaderVS.vs", "../Resources/Shaders/TriangleShaderFS.fs" );
@@ -229,6 +236,30 @@ void DrawSquareIBO(ESContext* esContext)
 	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
 }
 
+void DrawModel(ESContext* esContext)
+{
+	glClear(GL_COLOR_BUFFER_BIT);
+
+	glUseProgram(myShaders.GetProgram());
+
+	glBindBuffer(GL_ARRAY_BUFFER, woman1.m_VBO);
+
+	if (myShaders.GetAttributes().position != -1)
+	{
+		glEnableVertexAttribArray(myShaders.GetAttributes().position);
+		glVertexAttribPointer(myShaders.GetAttributes().position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	}
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, woman1.m_IBO);
+
+	glDrawElements(GL_TRIANGLES, woman1.m_indicesCount, GL_UNSIGNED_INT, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+
+	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
+}
+
 void LoadModelTest()
 {
 	Model woman1;
@@ -267,7 +298,8 @@ int _tmain( int argc, _TCHAR* argv[] )
 	//esRegisterDrawFunc( &esContext, DrawTwoTriangles );
 	//esRegisterDrawFunc( &esContext, DrawSquare );
 	//esRegisterDrawFunc(&esContext, DrawSquareIBO);
-	LoadModelTest();
+	esRegisterDrawFunc(&esContext, DrawModel);
+	//LoadModelTest();
 	esRegisterUpdateFunc( &esContext, Update );
 	esRegisterKeyFunc( &esContext, Key );
 
