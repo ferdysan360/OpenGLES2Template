@@ -188,6 +188,8 @@ void DrawModel(ESContext* esContext)
 	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
 		GL_RGB, GL_UNSIGNED_BYTE, imageData);
 
+	//cout << width << " " << height << " " << bpp << endl;
+
 	glUseProgram(womanShaders.GetProgram());
 
 	glUniform1i(womanShaders.GetUniforms().texture, 0);
@@ -196,12 +198,17 @@ void DrawModel(ESContext* esContext)
 
 	if (womanShaders.GetAttributes().position != -1)
 	{
+		cout << womanShaders.GetAttributes().position << endl;
 		glEnableVertexAttribArray(womanShaders.GetAttributes().position);
 		glVertexAttribPointer(womanShaders.GetAttributes().position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	}
+	else {
+		cout << "no position" << endl;
 	}
 
 	if (womanShaders.GetUniforms().textureCoors != -1)
 	{
+		//cout << womanShaders.GetUniforms().textureCoors << endl;
 		glEnableVertexAttribArray(womanShaders.GetUniforms().textureCoors);
 		glVertexAttribPointer(womanShaders.GetUniforms().textureCoors, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (char*)0 + sizeof(Vector3));
 	}
@@ -212,8 +219,8 @@ void DrawModel(ESContext* esContext)
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, woman1.m_IBO);
 
-	//glDrawElements(GL_TRIANGLES, woman1.m_indicesCount, GL_UNSIGNED_INT, 0);
-	glDrawArrays(GL_TRIANGLES, 0, woman1.m_verticesCount);
+	glDrawElements(GL_TRIANGLES, woman1.m_indicesCount, GL_UNSIGNED_INT, 0);
+	//glDrawArrays(GL_TRIANGLES, 0, woman1.m_verticesCount);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
