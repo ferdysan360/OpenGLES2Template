@@ -110,6 +110,8 @@
     <None Include="..\Readme.doc" />
     <None Include="..\Resources\Shaders\TriangleShaderFS.fs" />
     <None Include="..\Resources\Shaders\TriangleShaderVS.vs" />
+    <None Include="..\Resources\Shaders\WomanShaderFS.fs" />
+    <None Include="..\Resources\Shaders\WomanShaderVS.vs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\Utilities\Utilities.vcxproj">

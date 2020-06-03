@@ -15,14 +15,16 @@
 using namespace std;
 
 Shaders		myShaders;
+Shaders		womanShaders;
 
 Vertex		triangle1[3];
 Vertex		triangle2[3];
 Vertex		squareTriangle1[3];
 Vertex		squareTriangle2[3];
 
-
 Model woman1;
+int width, height, bpp;
+char* imageData;
 
 int Init( ESContext *esContext )
 {
@@ -51,8 +53,11 @@ int Init( ESContext *esContext )
 
 	woman1.InitModel("../Resources/Models/Woman1.nfg");
 
+	imageData = LoadTGA("../Resources/Textures/Woman1.tga", &width, &height, &bpp);
+
 	//creation of shaders and program 
 	myShaders.Init( "../Resources/Shaders/TriangleShaderVS.vs", "../Resources/Shaders/TriangleShaderFS.fs" );
+	womanShaders.Init("../Resources/Shaders/WomanShaderVS.vs", "../Resources/Shaders/WomanShaderFS.fs");
 
 	return 0;
 }
@@ -171,30 +176,50 @@ void DrawModel(ESContext* esContext)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	glUseProgram(myShaders.GetProgram());
+	GLuint textureID;
+	glGenTextures(1, &textureID);
+
+	glBindTexture(GL_TEXTURE_2D, textureID);
+
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_REPEAT);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+	glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_NEAREST);
+	glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0,
+		GL_RGB, GL_UNSIGNED_BYTE, imageData);
+
+	glUseProgram(womanShaders.GetProgram());
+
+	glUniform1i(womanShaders.GetUniforms().texture, 0);
 
 	glBindBuffer(GL_ARRAY_BUFFER, woman1.m_VBO);
 
-	if (myShaders.GetAttributes().position != -1)
+	if (womanShaders.GetAttributes().position != -1)
 	{
-		glEnableVertexAttribArray(myShaders.GetAttributes().position);
-		glVertexAttribPointer(myShaders.GetAttributes().position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+		glEnableVertexAttribArray(womanShaders.GetAttributes().position);
+		glVertexAttribPointer(womanShaders.GetAttributes().position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	}
+
+	if (womanShaders.GetUniforms().textureCoors != -1)
+	{
+		glEnableVertexAttribArray(womanShaders.GetUniforms().textureCoors);
+		glVertexAttribPointer(womanShaders.GetUniforms().textureCoors, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (char*)0 + sizeof(Vector3));
+	}
+	else
+	{
+		cout << "no texture coors!" << endl;
 	}
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, woman1.m_IBO);
 
-	glDrawElements(GL_TRIANGLES, woman1.m_indicesCount, GL_UNSIGNED_INT, 0);
+	//glDrawElements(GL_TRIANGLES, woman1.m_indicesCount, GL_UNSIGNED_INT, 0);
+	glDrawArrays(GL_TRIANGLES, 0, woman1.m_verticesCount);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
-}
-
-void LoadModelTest()
-{
-	Model woman1;
-	woman1.InitModel("../Resources/Models/Woman1.nfg");
 }
 
 void Update( ESContext *esContext, float deltaTime )
@@ -230,7 +255,6 @@ int _tmain( int argc, _TCHAR* argv[] )
 	//esRegisterDrawFunc( &esContext, DrawSquare );
 	//esRegisterDrawFunc(&esContext, DrawSquareIBO);
 	esRegisterDrawFunc(&esContext, DrawModel);
-	//LoadModelTest();
 	esRegisterUpdateFunc( &esContext, Update );
 	esRegisterKeyFunc( &esContext, Key );
 

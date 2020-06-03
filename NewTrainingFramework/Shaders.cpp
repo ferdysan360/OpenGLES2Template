@@ -24,7 +24,8 @@ int Shaders::Init( char * fileVertexShader, char * fileFragmentShader )
 	m_attributes.position = glGetAttribLocation( m_program, "a_posL" );
 
 	//finding location of uniforms
-	m_uniforms;
+	m_uniforms.texture = glGetAttribLocation(m_program, "u_texture");
+	m_uniforms.textureCoors = glGetAttribLocation(m_program, "a_uv");
 
 	return 0;
 }
