@@ -80,7 +80,7 @@ public:
 			glBindBuffer(GL_ARRAY_BUFFER, 0);
 			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 
-			//glEnable(GL_DEPTH_TEST);
+			glEnable(GL_DEPTH_TEST);
 
 			cout << "success! Model loaded!" << endl;
 		}
@@ -238,7 +238,7 @@ void DrawSquareIBO(ESContext* esContext)
 
 void DrawModel(ESContext* esContext)
 {
-	glClear(GL_COLOR_BUFFER_BIT);
+	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
 	glUseProgram(myShaders.GetProgram());
 
