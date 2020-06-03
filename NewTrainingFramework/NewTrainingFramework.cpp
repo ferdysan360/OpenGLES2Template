@@ -6,6 +6,7 @@
 #include "Vertex.h"
 #include "Shaders.h"
 #include "Globals.h"
+#include "Model.h"
 #include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -20,76 +21,6 @@ Vertex		triangle2[3];
 Vertex		squareTriangle1[3];
 Vertex		squareTriangle2[3];
 
-
-class Model
-{	
-public:
-	GLuint m_VBO, m_IBO;
-	unsigned int m_indicesCount, m_verticesCount;
-	Model() {
-		;
-	}
-	~Model() {
-		glDeleteBuffers(1, &m_VBO);
-		glDeleteBuffers(1, &m_IBO);
-	}
-
-	void InitModel(char* filename) {
-		// Woman model load
-		Vertex* verticesData;
-		int* indicesData;
-		FILE* pFile;
-		errno_t err = fopen_s(&pFile, filename, "r");
-		if (!err) {
-			fscanf_s(pFile, "NrVertices: %d", &m_verticesCount);
-			fgetc(pFile);
-
-			verticesData = new Vertex[m_verticesCount];
-			for (int i = 0; i < m_verticesCount; i++) {
-				fscanf_s(pFile, "   %*d. pos:[%f, %f, %f]; norm:[%f, %f, %f]; binorm:[%f, %f, %f]; tgt:[%f, %f, %f]; uv:[%f, %f];",
-					&verticesData[i].pos.x, &verticesData[i].pos.y, &verticesData[i].pos.z, &verticesData[i].norm.x, &verticesData[i].norm.y,
-					&verticesData[i].norm.z, &verticesData[i].binorm.x, &verticesData[i].binorm.y, &verticesData[i].binorm.z,
-					&verticesData[i].tgt.x, &verticesData[i].tgt.y, &verticesData[i].tgt.z, &verticesData[i].uv.x, &verticesData[i].uv.y);
-				fgetc(pFile);
-			}
-
-			cout << verticesData[12].pos.x << endl;
-
-			fscanf_s(pFile, "NrIndices: %d", &m_indicesCount);
-			fgetc(pFile);
-
-			indicesData = new int[m_indicesCount];
-			int indicesPairs = m_indicesCount / 3;
-			for (int i = 0; i < indicesPairs; i++) {
-				fscanf_s(pFile, "   %*d.    %d,    %d,    %d", &indicesData[i * 3], &indicesData[(i * 3) + 1], &indicesData[(i * 3) + 2]);
-				fgetc(pFile);
-			}
-
-			cout << indicesData[30] << endl;
-
-			fclose(pFile);
-
-			glGenBuffers(1, &m_VBO);
-			glBindBuffer(GL_ARRAY_BUFFER, m_VBO);
-			glBufferData(GL_ARRAY_BUFFER, sizeof(Vertex) * m_verticesCount, verticesData, GL_STATIC_DRAW);
-
-			glGenBuffers(1, &m_IBO);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, m_IBO);
-			glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(int) * m_indicesCount, indicesData, GL_STATIC_DRAW);
-
-			glBindBuffer(GL_ARRAY_BUFFER, 0);
-			glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-
-			glEnable(GL_DEPTH_TEST);
-
-			cout << "success! Model loaded!" << endl;
-		}
-		else {
-			cout << "fail to load file" << endl;
-		}
-		
-	}
-};
 
 Model woman1;
 
