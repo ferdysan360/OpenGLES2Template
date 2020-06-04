@@ -20,7 +20,7 @@ Shaders		womanShaders;
 
 Vertex		triangle1[3];
 Vertex		triangle2[3];
-Vertex		squareTriangle1[3];
+Vertex		squareTriangle1[4];
 Vertex		squareTriangle2[3];
 
 Model woman1;
@@ -44,11 +44,12 @@ int Init( ESContext *esContext )
 	squareTriangle1[0].pos = Vector3( 0.5,  0.5,  0.0 );
 	squareTriangle1[1].pos = Vector3( -0.5, 0.5,  0.0 );
 	squareTriangle1[2].pos = Vector3(  -0.5, -0.5,  0.0 );
+	squareTriangle1[3].pos = Vector3(0.5, -0.5, 0.0);
 
 	//triangle 2 data
-	squareTriangle2[0].pos = Vector3(0.5, 0.5, 0.0);
+	/*squareTriangle2[0].pos = Vector3(0.5, 0.5, 0.0);
 	squareTriangle2[1].pos = Vector3(-0.5, -0.5, 0.0);
-	squareTriangle2[2].pos = Vector3(0.5, -0.5, 0.0);
+	squareTriangle2[2].pos = Vector3(0.5, -0.5, 0.0);*/
 	
 
 	woman1.InitModel("../Resources/Models/Woman1.nfg");
@@ -95,17 +96,15 @@ void DrawSquare(ESContext* esContext)
 	GLuint vboId;
 	glGenBuffers(1, &vboId);
 	glBindBuffer(GL_ARRAY_BUFFER, vboId);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(squareTriangle1) + sizeof(squareTriangle2), 0, GL_STATIC_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(squareTriangle1), squareTriangle1);
-	glBufferSubData(GL_ARRAY_BUFFER, sizeof(squareTriangle1), sizeof(squareTriangle2), squareTriangle2);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(squareTriangle1), squareTriangle1, GL_STATIC_DRAW);
 
 	int indices[6];
 	indices[0] = 0;
 	indices[1] = 1;
 	indices[2] = 2;
-	indices[3] = 3;
-	indices[4] = 4;
-	indices[5] = 5;
+	indices[3] = 0;
+	indices[4] = 2;
+	indices[5] = 3;
 
 	GLuint iboId;
 	//glGenBuffers(1, &iboId);
@@ -138,17 +137,15 @@ void DrawSquareIBO(ESContext* esContext)
 	GLuint vboId;
 	glGenBuffers(1, &vboId);
 	glBindBuffer(GL_ARRAY_BUFFER, vboId);
-	glBufferData(GL_ARRAY_BUFFER, sizeof(squareTriangle1) + sizeof(squareTriangle2), 0, GL_STATIC_DRAW);
-	glBufferSubData(GL_ARRAY_BUFFER, 0, sizeof(squareTriangle1), squareTriangle1);
-	glBufferSubData(GL_ARRAY_BUFFER, sizeof(squareTriangle1), sizeof(squareTriangle2), squareTriangle2);
+	glBufferData(GL_ARRAY_BUFFER, sizeof(squareTriangle1), squareTriangle1, GL_STATIC_DRAW);
 
 	int indices[6];
 	indices[0] = 0;
 	indices[1] = 1;
 	indices[2] = 2;
-	indices[3] = 3;
-	indices[4] = 4;
-	indices[5] = 5;
+	indices[3] = 0;
+	indices[4] = 2;
+	indices[5] = 3;
 
 	GLuint iboId;
 	glGenBuffers(1, &iboId);

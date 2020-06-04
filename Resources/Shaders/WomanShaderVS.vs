@@ -1,9 +1,9 @@
-attribute vec4 a_posL;
+attribute vec3 a_posL;
 attribute vec2 a_uv;
 varying vec2 v_uv;
 
 void main()
 {
-	gl_Position = a_posL;
+	gl_Position = vec4(a_posL, 2.0);
 	v_uv = a_uv;
 }
