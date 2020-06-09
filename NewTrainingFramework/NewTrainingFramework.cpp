@@ -281,68 +281,54 @@ void Update( ESContext *esContext, float deltaTime )
 void Key( ESContext *esContext, unsigned char key, bool bIsPressed )
 {
 	if (bIsPressed) {
-		switch (key) {
-			case 'W':
-				camera.transform.position.y += 0.1f;
-				break;
-			case 'S':
-				camera.transform.position.y -= 0.1f;
-				break;
-			case 'A':
-				camera.transform.position.x -= 0.1f;
-				break;
-			case 'D':
-				camera.transform.position.x += 0.1f;
-				break;
-			case 'Q':
-			{
-				Vector4 forward;
-				forward.x = 0.0f;
-				forward.y = 0.0f;
-				forward.z = 0.1f;
-				forward.w = 1.0f;
+		if (GetAsyncKeyState('W'))
+			camera.transform.position.y += 0.1f;
+		if (GetAsyncKeyState('S'))
+			camera.transform.position.y -= 0.1f;
+		if (GetAsyncKeyState('A'))
+			camera.transform.position.x -= 0.1f;
+		if (GetAsyncKeyState('D'))
+			camera.transform.position.x += 0.1f;
+		if (GetAsyncKeyState('Q'))
+		{
+			Vector4 forward;
+			forward.x = 0.0f;
+			forward.y = 0.0f;
+			forward.z = 0.1f;
+			forward.w = 1.0f;
 
-				Matrix world = camera.GetWorldMatrix();
-				Vector4 new_pos = forward * world;
-				camera.transform.position.x = new_pos.x;
-				camera.transform.position.y = new_pos.y;
-				camera.transform.position.z = new_pos.z;
-				break;
-			}
-			case 'E':
-			{
-				Vector4 forward;
-				forward.x = 0.0f;
-				forward.y = 0.0f;
-				forward.z = -0.1f;
-				forward.w = 1.0f;
-
-				Matrix world = camera.GetWorldMatrix();
-				Vector4 new_pos = forward * world;
-				camera.transform.position.x = new_pos.x;
-				camera.transform.position.y = new_pos.y;
-				camera.transform.position.z = new_pos.z;
-				break;
-			}
-			case VK_UP:
-				camera.transform.rotation.x += 0.05f;
-				break;
-			case VK_DOWN:
-				camera.transform.rotation.x -= 0.05f;
-				break;
-			case VK_LEFT:
-				camera.transform.rotation.y += 0.05f;
-				break;
-			case VK_RIGHT:
-				camera.transform.rotation.y -= 0.05f;
-				break;
-			case 'Z':
-				camera.transform.rotation.z += 0.05f;
-				break;
-			case 'C':
-				camera.transform.rotation.z -= 0.05f;
-				break;
+			Matrix world = camera.GetWorldMatrix();
+			Vector4 new_pos = forward * world;
+			camera.transform.position.x = new_pos.x;
+			camera.transform.position.y = new_pos.y;
+			camera.transform.position.z = new_pos.z;
 		}
+		if (GetAsyncKeyState('E'))
+		{
+			Vector4 forward;
+			forward.x = 0.0f;
+			forward.y = 0.0f;
+			forward.z = -0.1f;
+			forward.w = 1.0f;
+
+			Matrix world = camera.GetWorldMatrix();
+			Vector4 new_pos = forward * world;
+			camera.transform.position.x = new_pos.x;
+			camera.transform.position.y = new_pos.y;
+			camera.transform.position.z = new_pos.z;
+		}
+		if (GetAsyncKeyState(VK_UP))
+			camera.transform.rotation.x += 0.05f;
+		if (GetAsyncKeyState(VK_DOWN))
+			camera.transform.rotation.x -= 0.05f;
+		if (GetAsyncKeyState(VK_LEFT))
+			camera.transform.rotation.y += 0.05f;
+		if (GetAsyncKeyState(VK_RIGHT))
+			camera.transform.rotation.y -= 0.05f;
+		if (GetAsyncKeyState('Z'))
+			camera.transform.rotation.z += 0.05f;
+		if (GetAsyncKeyState('C'))
+			camera.transform.rotation.z -= 0.05f;
 	}
 }
 
