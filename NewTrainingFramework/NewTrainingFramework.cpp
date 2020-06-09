@@ -48,8 +48,8 @@ int Init( ESContext *esContext )
 	woman2.InitObject3D("../Resources/Models/Woman2.nfg", "../Resources/Textures/Woman2.tga", "../Resources/Shaders/WomanShaderVS.vs", "../Resources/Shaders/WomanShaderFS.fs");
 
 	// Set Transform of 3D Object
-	woman1.SetTransform(-0.5f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f);
-	woman2.SetTransform(0.5f, 0.0f, 0.0f, 0.3f, 0.3f, 0.3f, 0.0f, 0.0f, 0.0f);
+	woman1.SetTransform(-0.5f, 0.0f, 0.5f, 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f);
+	woman2.SetTransform(0.5f, 0.0f, -0.5f, 0.3f, 0.3f, 0.3f, 0.0f, 0.0f, 0.0f);
 
 	//creation of shaders and program 
 	myShaders.Init( "../Resources/Shaders/TriangleShaderVS.vs", "../Resources/Shaders/TriangleShaderFS.fs" );
@@ -265,8 +265,8 @@ void DrawModel(ESContext* esContext)
 
 void Update( ESContext *esContext, float deltaTime )
 {
-	woman1.SetTransform(-0.5f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, 0.0f, woman1.transform.rotation.y + 1.0f * deltaTime, 0.0f);
-	woman2.SetTransform(0.5f, 0.0f, 0.0f, 0.3f, 0.3f, 0.3f, 0.0f, 0.0f, woman2.transform.rotation.z + 1.0f * deltaTime);
+	woman1.SetTransform(-0.5f, 0.0f, 0.5f, 0.5f, 0.5f, 0.5f, 0.0f, woman1.transform.rotation.y + 1.0f * deltaTime, 0.0f);
+	woman2.SetTransform(0.5f, 0.0f, -0.5f, 0.3f, 0.3f, 0.3f, 0.0f, 0.0f, woman2.transform.rotation.z + 1.0f * deltaTime);
 }
 
 void Key( ESContext *esContext, unsigned char key, bool bIsPressed )
