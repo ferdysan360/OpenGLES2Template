@@ -266,7 +266,7 @@ void DrawModel(ESContext* esContext)
 void Update( ESContext *esContext, float deltaTime )
 {
 	woman1.SetTransform(-0.5f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, 0.0f, woman1.transform.rotation.y + 1.0f * deltaTime, 0.0f);
-	woman2.SetTransform(0.5f, 0.0f, 0.0f, 0.3f, 0.3f, 0.3f, 0.0f, 0.0f, 0.0f);
+	woman2.SetTransform(0.5f, 0.0f, 0.0f, 0.3f, 0.3f, 0.3f, 0.0f, 0.0f, woman2.transform.rotation.z + 1.0f * deltaTime);
 }
 
 void Key( ESContext *esContext, unsigned char key, bool bIsPressed )
