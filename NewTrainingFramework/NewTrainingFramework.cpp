@@ -49,7 +49,7 @@ int Init( ESContext *esContext )
 
 	// Set Transform of 3D Object
 	woman1.SetTransform(-0.5f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f);
-	woman2.SetTransform(0.5f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f);
+	woman2.SetTransform(0.5f, 0.0f, 0.0f, 0.3f, 0.3f, 0.3f, 0.0f, 0.0f, 0.0f);
 
 	//creation of shaders and program 
 	myShaders.Init( "../Resources/Shaders/TriangleShaderVS.vs", "../Resources/Shaders/TriangleShaderFS.fs" );
