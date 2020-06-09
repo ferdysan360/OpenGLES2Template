@@ -280,7 +280,46 @@ void Update( ESContext *esContext, float deltaTime )
 
 void Key( ESContext *esContext, unsigned char key, bool bIsPressed )
 {
-
+	if (bIsPressed) {
+		switch (key) {
+			case 'W':
+				camera.transform.position.y += 0.1f;
+				break;
+			case 'S':
+				camera.transform.position.y -= 0.1f;
+				break;
+			case 'A':
+				camera.transform.position.x -= 0.1f;
+				break;
+			case 'D':
+				camera.transform.position.x += 0.1f;
+				break;
+			case 'Q':
+				camera.transform.position.z += 0.1f;
+				break;
+			case 'E':
+				camera.transform.position.z -= 0.1f;
+				break;
+			case VK_UP:
+				camera.transform.rotation.x += 0.05f;
+				break;
+			case VK_DOWN:
+				camera.transform.rotation.x -= 0.05f;
+				break;
+			case VK_LEFT:
+				camera.transform.rotation.y += 0.05f;
+				break;
+			case VK_RIGHT:
+				camera.transform.rotation.y -= 0.05f;
+				break;
+			case 'Z':
+				camera.transform.rotation.z += 0.05f;
+				break;
+			case 'C':
+				camera.transform.rotation.z -= 0.05f;
+				break;
+		}
+	}
 }
 
 void CleanUp()
