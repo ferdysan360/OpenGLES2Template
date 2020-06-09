@@ -105,7 +105,7 @@ void DrawSquare(ESContext* esContext)
 	indices[4] = 2;
 	indices[5] = 3;
 
-	GLuint iboId;
+	//GLuint iboId;
 	//glGenBuffers(1, &iboId);
 	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, iboId);
 	//glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
@@ -295,11 +295,35 @@ void Key( ESContext *esContext, unsigned char key, bool bIsPressed )
 				camera.transform.position.x += 0.1f;
 				break;
 			case 'Q':
-				camera.transform.position.z += 0.1f;
+			{
+				Vector4 forward;
+				forward.x = 0.0f;
+				forward.y = 0.0f;
+				forward.z = 0.1f;
+				forward.w = 1.0f;
+
+				Matrix world = camera.GetWorldMatrix();
+				Vector4 new_pos = forward * world;
+				camera.transform.position.x = new_pos.x;
+				camera.transform.position.y = new_pos.y;
+				camera.transform.position.z = new_pos.z;
 				break;
+			}
 			case 'E':
-				camera.transform.position.z -= 0.1f;
+			{
+				Vector4 forward;
+				forward.x = 0.0f;
+				forward.y = 0.0f;
+				forward.z = -0.1f;
+				forward.w = 1.0f;
+
+				Matrix world = camera.GetWorldMatrix();
+				Vector4 new_pos = forward * world;
+				camera.transform.position.x = new_pos.x;
+				camera.transform.position.y = new_pos.y;
+				camera.transform.position.z = new_pos.z;
 				break;
+			}
 			case VK_UP:
 				camera.transform.rotation.x += 0.05f;
 				break;
@@ -355,7 +379,7 @@ int _tmain( int argc, _TCHAR* argv[] )
 
 	//identifying memory leaks
 	MemoryDump();
-	printf( "Press any key...\n" );
+	cout << "Press any key..." << endl;;
 	_getch();
 
 	return 0;
