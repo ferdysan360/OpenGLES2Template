@@ -6,6 +6,7 @@
 #include "Vertex.h"
 #include "Globals.h"
 #include "Object3D.h"
+#include "Camera.h"
 #include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -22,6 +23,8 @@ Vertex		squareTriangle2[3];
 
 Object3D woman1;
 Object3D woman2;
+
+Camera camera;
 
 int Init( ESContext *esContext )
 {
@@ -48,8 +51,9 @@ int Init( ESContext *esContext )
 	woman2.InitObject3D("../Resources/Models/Woman2.nfg", "../Resources/Textures/Woman2.tga", "../Resources/Shaders/WomanShaderVS.vs", "../Resources/Shaders/WomanShaderFS.fs");
 
 	// Set Transform of 3D Object
-	woman1.SetTransform(-0.5f, 0.0f, 0.5f, 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f);
-	woman2.SetTransform(0.5f, 0.0f, -0.5f, 0.3f, 0.3f, 0.3f, 0.0f, 0.0f, 0.0f);
+	woman1.SetTransform(-0.5f, 0.0f, 2.0f, 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f);
+	woman2.SetTransform(0.5f, 0.0f, 2.0f, 0.3f, 0.3f, 0.3f, 0.0f, 0.0f, 0.0f);
+	camera.SetTransform(0.0f, 0.0f, 4.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
 
 	//creation of shaders and program 
 	myShaders.Init( "../Resources/Shaders/TriangleShaderVS.vs", "../Resources/Shaders/TriangleShaderFS.fs" );
@@ -166,7 +170,11 @@ void DrawSquareIBO(ESContext* esContext)
 void DrawModel(ESContext* esContext)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
-	
+
+	Matrix World1 = woman1.GetWorldMatrix();
+	Matrix View = camera.GetViewMatrix();
+	Matrix Projection = camera.GetProjectionMatrix();
+
 	// woman 1
 	glBindTexture(GL_TEXTURE_2D, woman1.texture.textureID);
 
@@ -176,9 +184,9 @@ void DrawModel(ESContext* esContext)
 
 	glBindBuffer(GL_ARRAY_BUFFER, woman1.model.m_VBO);
 
-	Matrix worldMatrix = woman1.GetWorldMatrix();
+	Matrix MVPMatrix1 = World1 * View * Projection;
 	if (woman1.shaders.GetUniforms().mvp_matrix != -1) {
-		glUniformMatrix4fv(woman1.shaders.GetUniforms().mvp_matrix, 1, GL_FALSE, worldMatrix.m[0]);
+		glUniformMatrix4fv(woman1.shaders.GetUniforms().mvp_matrix, 1, GL_FALSE, MVPMatrix1.m[0]);
 	}
 	else {
 		cout << "no matrix!" << endl;
@@ -224,9 +232,10 @@ void DrawModel(ESContext* esContext)
 
 	glBindBuffer(GL_ARRAY_BUFFER, woman2.model.m_VBO);
 
-	Matrix worldMatrix2 = woman2.GetWorldMatrix();
+	Matrix World2 = woman2.GetWorldMatrix();
+	Matrix MVPMatrix2 = World2 * View * Projection;
 	if (woman2.shaders.GetUniforms().mvp_matrix != -1) {
-		glUniformMatrix4fv(woman2.shaders.GetUniforms().mvp_matrix, 1, GL_FALSE, worldMatrix2.m[0]);
+		glUniformMatrix4fv(woman2.shaders.GetUniforms().mvp_matrix, 1, GL_FALSE, MVPMatrix2.m[0]);
 	}
 	else {
 		cout << "no matrix!" << endl;
@@ -265,8 +274,8 @@ void DrawModel(ESContext* esContext)
 
 void Update( ESContext *esContext, float deltaTime )
 {
-	woman1.SetTransform(-0.5f, 0.0f, 0.5f, 0.5f, 0.5f, 0.5f, 0.0f, woman1.transform.rotation.y + 1.0f * deltaTime, 0.0f);
-	woman2.SetTransform(0.5f, 0.0f, -0.5f, 0.3f, 0.3f, 0.3f, 0.0f, 0.0f, woman2.transform.rotation.z + 1.0f * deltaTime);
+	woman1.transform.rotation.y += 1.0f * deltaTime;
+	woman2.transform.rotation.z += 1.0f * deltaTime;
 }
 
 void Key( ESContext *esContext, unsigned char key, bool bIsPressed )

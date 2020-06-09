@@ -90,6 +90,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="Camera.cpp" />
     <ClCompile Include="Model.cpp" />
     <ClCompile Include="NewTrainingFramework.cpp" />
     <ClCompile Include="Shaders.cpp" />
@@ -101,6 +102,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="Camera.h" />
     <ClInclude Include="Globals.h" />
     <ClInclude Include="Model.h" />
     <ClInclude Include="Object3D.h" />
