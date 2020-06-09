@@ -4,10 +4,8 @@
 #include "stdafx.h"
 #include "../Utilities/utilities.h" // if you use STL, please include this line AFTER all other include
 #include "Vertex.h"
-#include "Shaders.h"
 #include "Globals.h"
-#include "Model.h"
-#include "Texture.h"
+#include "Object3D.h"
 #include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -16,15 +14,14 @@
 using namespace std;
 
 Shaders		myShaders;
-Shaders		womanShaders;
 
 Vertex		triangle1[3];
 Vertex		triangle2[3];
 Vertex		squareTriangle1[4];
 Vertex		squareTriangle2[3];
 
-Model woman1;
-Texture womanTexture1;
+Object3D woman1;
+Object3D woman2;
 
 int Init( ESContext *esContext )
 {
@@ -46,18 +43,15 @@ int Init( ESContext *esContext )
 	squareTriangle1[2].pos = Vector3(  -0.5, -0.5,  0.0 );
 	squareTriangle1[3].pos = Vector3(0.5, -0.5, 0.0);
 
-	//triangle 2 data
-	/*squareTriangle2[0].pos = Vector3(0.5, 0.5, 0.0);
-	squareTriangle2[1].pos = Vector3(-0.5, -0.5, 0.0);
-	squareTriangle2[2].pos = Vector3(0.5, -0.5, 0.0);*/
-	
+	// Init 3D Object
+	woman1.InitObject3D("../Resources/Models/Woman1.nfg", "../Resources/Textures/Woman1.tga", "../Resources/Shaders/WomanShaderVS.vs", "../Resources/Shaders/WomanShaderFS.fs");
+	woman2.InitObject3D("../Resources/Models/Woman2.nfg", "../Resources/Textures/Woman2.tga", "../Resources/Shaders/WomanShaderVS.vs", "../Resources/Shaders/WomanShaderFS.fs");
 
-	woman1.InitModel("../Resources/Models/Woman1.nfg");
-	womanTexture1.InitTexture("../Resources/Textures/Woman1.tga");
+	// Set Transform of 3D Object
+	woman1.SetTransform(-0.5f, 0.0f, 0.0f, 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f);
 
 	//creation of shaders and program 
 	myShaders.Init( "../Resources/Shaders/TriangleShaderVS.vs", "../Resources/Shaders/TriangleShaderFS.fs" );
-	womanShaders.Init("../Resources/Shaders/WomanShaderVS.vs", "../Resources/Shaders/WomanShaderFS.fs");
 
 	return 0;
 }
@@ -171,42 +165,91 @@ void DrawSquareIBO(ESContext* esContext)
 void DrawModel(ESContext* esContext)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
+	
+	// woman 1
+	glBindTexture(GL_TEXTURE_2D, woman1.texture.textureID);
 
-	glBindTexture(GL_TEXTURE_2D, womanTexture1.textureID);
+	glUseProgram(woman1.shaders.GetProgram());
 
-	glUseProgram(womanShaders.GetProgram());
+	glUniform1i(woman1.shaders.GetUniforms().texture, 0);
 
-	glUniform1i(womanShaders.GetUniforms().texture, 0);
+	glBindBuffer(GL_ARRAY_BUFFER, woman1.model.m_VBO);
 
-	glBindBuffer(GL_ARRAY_BUFFER, woman1.m_VBO);
+	Matrix worldMatrix = woman1.GetWorldMatrix();
+	if (woman1.shaders.GetUniforms().mvp_matrix != -1) {
+		glUniformMatrix4fv(woman1.shaders.GetUniforms().mvp_matrix, 1, GL_FALSE, worldMatrix.m[0]);
+	}
+	else {
+		cout << "no matrix!" << endl;
+	}
+	
 
-	if (womanShaders.GetAttributes().position != -1)
+	if (woman1.shaders.GetAttributes().position != -1)
 	{
-		glEnableVertexAttribArray(womanShaders.GetAttributes().position);
-		glVertexAttribPointer(womanShaders.GetAttributes().position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+		glEnableVertexAttribArray(woman1.shaders.GetAttributes().position);
+		glVertexAttribPointer(woman1.shaders.GetAttributes().position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
 	}
 	else {
 		cout << "no position" << endl;
 	}
 
-	if (womanShaders.GetUniforms().textureCoors != -1)
+	if (woman1.shaders.GetUniforms().textureCoors != -1)
 	{
-		glEnableVertexAttribArray(womanShaders.GetUniforms().textureCoors);
-		glVertexAttribPointer(womanShaders.GetUniforms().textureCoors, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (char*)0 + sizeof(Vector3));
+		glEnableVertexAttribArray(woman1.shaders.GetUniforms().textureCoors);
+		glVertexAttribPointer(woman1.shaders.GetUniforms().textureCoors, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (char*)0 + sizeof(Vector3));
 	}
 	else
 	{
 		cout << "no texture coors!" << endl;
 	}
 
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, woman1.m_IBO);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, woman1.model.m_IBO);
 
-	glDrawElements(GL_TRIANGLES, woman1.m_indicesCount, GL_UNSIGNED_INT, 0);
+	glDrawElements(GL_TRIANGLES, woman1.model.m_indicesCount, GL_UNSIGNED_INT, 0);
 	//glDrawArrays(GL_TRIANGLES, 0, woman1.m_verticesCount);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// -----------------------------------
+
+	// woman 2
+	//glBindTexture(GL_TEXTURE_2D, woman2.texture.textureID);
+
+	//glUseProgram(woman2.shaders.GetProgram());
+
+	//glUniform1i(woman2.shaders.GetUniforms().texture, 0);
+
+	//glBindBuffer(GL_ARRAY_BUFFER, woman2.model.m_VBO);
+
+	//if (woman2.shaders.GetAttributes().position != -1)
+	//{
+	//	glEnableVertexAttribArray(woman2.shaders.GetAttributes().position);
+	//	glVertexAttribPointer(woman2.shaders.GetAttributes().position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	//}
+	//else {
+	//	cout << "no position" << endl;
+	//}
+
+	//if (woman2.shaders.GetUniforms().textureCoors != -1)
+	//{
+	//	glEnableVertexAttribArray(woman2.shaders.GetUniforms().textureCoors);
+	//	glVertexAttribPointer(woman2.shaders.GetUniforms().textureCoors, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (char*)0 + sizeof(Vector3));
+	//}
+	//else
+	//{
+	//	cout << "no texture coors!" << endl;
+	//}
+
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, woman2.model.m_IBO);
+
+	//glDrawElements(GL_TRIANGLES, woman2.model.m_indicesCount, GL_UNSIGNED_INT, 0);
+	////glDrawArrays(GL_TRIANGLES, 0, woman1.m_verticesCount);
+
+	//glBindBuffer(GL_ARRAY_BUFFER, 0);
+	//glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	//glBindTexture(GL_TEXTURE_2D, 0);
 
 	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
 }

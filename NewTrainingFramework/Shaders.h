@@ -13,6 +13,7 @@ public:
 	{
 		GLint texture;
 		GLint textureCoors;
+		GLint mvp_matrix;
 	};
 
 private:

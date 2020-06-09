@@ -21,7 +21,6 @@ void Model::InitModel(char* filename) {
 	if (!err) {
 		fscanf_s(pFile, "NrVertices: %d", &m_verticesCount);
 		fgetc(pFile);
-
 		verticesData = new Vertex[m_verticesCount];
 		for (int i = 0; i < m_verticesCount; i++) {
 			fscanf_s(pFile, "   %*d. pos:[%f, %f, %f]; norm:[%f, %f, %f]; binorm:[%f, %f, %f]; tgt:[%f, %f, %f]; uv:[%f, %f];",
@@ -30,8 +29,6 @@ void Model::InitModel(char* filename) {
 				&verticesData[i].tgt.x, &verticesData[i].tgt.y, &verticesData[i].tgt.z, &verticesData[i].uv.x, &verticesData[i].uv.y);
 			fgetc(pFile);
 		}
-
-		cout << verticesData[12].pos.x << endl;
 
 		fscanf_s(pFile, "NrIndices: %d", &m_indicesCount);
 		fgetc(pFile);
@@ -42,8 +39,6 @@ void Model::InitModel(char* filename) {
 			fscanf_s(pFile, "   %*d.    %d,    %d,    %d", &indicesData[i * 3], &indicesData[(i * 3) + 1], &indicesData[(i * 3) + 2]);
 			fgetc(pFile);
 		}
-
-		cout << indicesData[30] << endl;
 
 		fclose(pFile);
 
