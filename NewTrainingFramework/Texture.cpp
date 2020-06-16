@@ -83,7 +83,10 @@ void Texture::InitSkyBoxTexture(char* PX, char* NX, char* PY, char* NY, char* PZ
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
-	/*for (int i = 0; i < 6; i++) {
-		delete cubePixels[i];
-	}*/
+	delete cubePixels0;
+	delete cubePixels1;
+	delete cubePixels2;
+	delete cubePixels3;
+	delete cubePixels4;
+	delete cubePixels5;
 }

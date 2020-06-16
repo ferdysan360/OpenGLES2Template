@@ -24,6 +24,7 @@ Vertex		squareTriangle2[3];
 
 Object3D woman1;
 Object3D woman2;
+Object3D ball;
 SkyBox skybox;
 
 Camera camera;
@@ -60,12 +61,14 @@ int Init( ESContext *esContext )
 		"../Resources/Textures/SkyBox_Back.tga",
 		"../Resources/Shaders/CubeShaderVS.vs",
 		"../Resources/Shaders/CubeShaderFS.fs");
+	ball.InitObject3D("../Resources/Models/Ball.nfg", "../Resources/Textures/EnvMap.tga", "../Resources/Shaders/WomanShaderVS.vs", "../Resources/Shaders/WomanShaderFS.fs");
 
 	// Set Transform of 3D Object
 	woman1.SetTransform(-0.5f, 0.0f, 2.0f, 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f);
 	woman2.SetTransform(0.5f, 0.0f, 2.0f, 0.3f, 0.3f, 0.3f, 0.0f, 0.0f, 0.0f);
 	camera.SetTransform(0.0f, 0.0f, 4.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
 	skybox.SetTransform(0.0f, 0.0f, 0.0f, 10.0f, 10.0f, 10.0f, 0.0f, 0.0f, 0.0f);
+	ball.SetTransform(0.0f, 1.0f, 2.0f, 0.01f, 0.01f, 0.01f, 0.0f, 0.0f, 0.0f);
 
 	//creation of shaders and program 
 	myShaders.Init( "../Resources/Shaders/TriangleShaderVS.vs", "../Resources/Shaders/TriangleShaderFS.fs" );
@@ -328,6 +331,54 @@ void DrawModel(ESContext* esContext)
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+
+	// --------------------------------------------
+
+	// ball
+	glBindTexture(GL_TEXTURE_2D, ball.texture.textureID);
+
+	glUseProgram(ball.shaders.GetProgram());
+
+	glUniform1i(ball.shaders.GetUniforms().texture, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, ball.model.m_VBO);
+
+	Matrix World4 = ball.GetWorldMatrix();
+	Matrix MVPMatrix4 = World4 * View * Projection;
+	if (ball.shaders.GetUniforms().mvp_matrix != -1) {
+		glUniformMatrix4fv(ball.shaders.GetUniforms().mvp_matrix, 1, GL_FALSE, MVPMatrix4.m[0]);
+	}
+	else {
+		cout << "no matrix!" << endl;
+	}
+
+	if (ball.shaders.GetAttributes().position != -1)
+	{
+		glEnableVertexAttribArray(ball.shaders.GetAttributes().position);
+		glVertexAttribPointer(ball.shaders.GetAttributes().position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	}
+	else {
+		cout << "no position" << endl;
+	}
+
+	if (ball.shaders.GetUniforms().textureCoors != -1)
+	{
+		glEnableVertexAttribArray(ball.shaders.GetUniforms().textureCoors);
+		glVertexAttribPointer(ball.shaders.GetUniforms().textureCoors, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (char*)0 + sizeof(Vector3));
+	}
+	else
+	{
+		cout << "no texture coors!" << endl;
+	}
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ball.model.m_IBO);
+
+	glDrawElements(GL_TRIANGLES, ball.model.m_indicesCount, GL_UNSIGNED_INT, 0);
+	//glDrawArrays(GL_TRIANGLES, 0, ball.m_verticesCount);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
 
 	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
 }
