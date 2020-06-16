@@ -7,6 +7,7 @@
 #include "Globals.h"
 #include "Object3D.h"
 #include "Camera.h"
+#include "SkyBox.h"
 #include <conio.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,6 +24,7 @@ Vertex		squareTriangle2[3];
 
 Object3D woman1;
 Object3D woman2;
+SkyBox skybox;
 
 Camera camera;
 
@@ -49,11 +51,13 @@ int Init( ESContext *esContext )
 	// Init 3D Object
 	woman1.InitObject3D("../Resources/Models/Woman1.nfg", "../Resources/Textures/Woman1.tga", "../Resources/Shaders/WomanShaderVS.vs", "../Resources/Shaders/WomanShaderFS.fs");
 	woman2.InitObject3D("../Resources/Models/Woman2.nfg", "../Resources/Textures/Woman2.tga", "../Resources/Shaders/WomanShaderVS.vs", "../Resources/Shaders/WomanShaderFS.fs");
+	skybox.InitSkyBox("../Resources/Models/SkyBox.nfg", "", "../Resources/Shaders/CubeShaderVS.vs", "../Resources/Shaders/CubeShaderFS.fs");
 
 	// Set Transform of 3D Object
 	woman1.SetTransform(-0.5f, 0.0f, 2.0f, 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f);
 	woman2.SetTransform(0.5f, 0.0f, 2.0f, 0.3f, 0.3f, 0.3f, 0.0f, 0.0f, 0.0f);
 	camera.SetTransform(0.0f, 0.0f, 4.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
+	skybox.SetTransform(0.0f, 0.0f, 0.0f, 10.0f, 10.0f, 10.0f, 0.0f, 0.0f, 0.0f);
 
 	//creation of shaders and program 
 	myShaders.Init( "../Resources/Shaders/TriangleShaderVS.vs", "../Resources/Shaders/TriangleShaderFS.fs" );
@@ -263,11 +267,59 @@ void DrawModel(ESContext* esContext)
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, woman2.model.m_IBO);
 
 	glDrawElements(GL_TRIANGLES, woman2.model.m_indicesCount, GL_UNSIGNED_INT, 0);
-	//glDrawArrays(GL_TRIANGLES, 0, woman1.m_verticesCount);
+	//glDrawArrays(GL_TRIANGLES, 0, woman2.m_verticesCount);
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
 	glBindTexture(GL_TEXTURE_2D, 0);
+
+	// -----------------------------------
+
+	// skybox
+	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.texture.textureID);
+
+	glUseProgram(skybox.shaders.GetProgram());
+
+	glUniform1i(skybox.shaders.GetUniforms().texture, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, skybox.model.m_VBO);
+
+	Matrix World3 = skybox.GetWorldMatrix();
+	Matrix MVPMatrix3 = World3 * View * Projection;
+	if (skybox.shaders.GetUniforms().mvp_matrix != -1) {
+		glUniformMatrix4fv(skybox.shaders.GetUniforms().mvp_matrix, 1, GL_FALSE, MVPMatrix3.m[0]);
+	}
+	else {
+		cout << "no matrix!" << endl;
+	}
+
+	if (skybox.shaders.GetAttributes().position != -1)
+	{
+		glEnableVertexAttribArray(skybox.shaders.GetAttributes().position);
+		glVertexAttribPointer(skybox.shaders.GetAttributes().position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	}
+	else {
+		cout << "no position" << endl;
+	}
+
+	/*if (skybox.shaders.GetUniforms().textureCoors != -1)
+	{
+		glEnableVertexAttribArray(skybox.shaders.GetUniforms().textureCoors);
+		glVertexAttribPointer(skybox.shaders.GetUniforms().textureCoors, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (char*)0 + sizeof(Vector3));
+	}
+	else
+	{
+		cout << "no texture coors!" << endl;
+	}*/
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skybox.model.m_IBO);
+
+	glDrawElements(GL_TRIANGLES, skybox.model.m_indicesCount, GL_UNSIGNED_INT, 0);
+	//glDrawArrays(GL_TRIANGLES, 0, skybox.m_verticesCount);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
 }

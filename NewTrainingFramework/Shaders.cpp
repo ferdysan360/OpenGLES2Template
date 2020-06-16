@@ -27,7 +27,7 @@ int Shaders::Init( char * fileVertexShader, char * fileFragmentShader )
 	m_uniforms.texture = glGetUniformLocation(m_program, "u_texture");
 	m_uniforms.textureCoors = glGetAttribLocation(m_program, "a_uv");
 	m_uniforms.mvp_matrix = glGetUniformLocation(m_program, "u_world");
-
+	
 	return 0;
 }
 
