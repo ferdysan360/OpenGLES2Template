@@ -28,15 +28,22 @@ void Texture::InitTexture(char* filename) {
 	glBindTexture(GL_TEXTURE_2D, 0);
 }
 
-void Texture::InitSkyBoxTexture() {
+void Texture::InitSkyBoxTexture(char* PX, char* NX, char* PY, char* NY, char* PZ, char* NZ) {
 	//char* cubePixels[6];
 
-	char* cubePixels0 = LoadTGA("../Resources/Textures/Skybox_Right.tga", &width, &height, &bpp);
-	char* cubePixels1 = LoadTGA("../Resources/Textures/Skybox_Left.tga", &width, &height, &bpp);
-	char* cubePixels2 = LoadTGA("../Resources/Textures/Skybox_Top.tga", &width, &height, &bpp);
-	char* cubePixels3 = LoadTGA("../Resources/Textures/Skybox_Bottom.tga", &width, &height, &bpp);
-	char* cubePixels4 = LoadTGA("../Resources/Textures/Skybox_Front.tga", &width, &height, &bpp);
-	char* cubePixels5 = LoadTGA("../Resources/Textures/Skybox_Back.tga", &width, &height, &bpp);
+	int width0, height0, bpp0;
+	int width1, height1, bpp1;
+	int width2, height2, bpp2;
+	int width3, height3, bpp3;
+	int width4, height4, bpp4;
+	int width5, height5, bpp5;
+
+	char* cubePixels0 = LoadTGA(PX, &width0, &height0, &bpp0);
+	char* cubePixels1 = LoadTGA(NX, &width1, &height1, &bpp1);
+	char* cubePixels2 = LoadTGA(PY, &width2, &height2, &bpp2);
+	char* cubePixels3 = LoadTGA(NY, &width3, &height3, &bpp3);
+	char* cubePixels4 = LoadTGA(PZ, &width4, &height4, &bpp4);
+	char* cubePixels5 = LoadTGA(NZ, &width5, &height5, &bpp5);
 	
 	glGenTextures(1, &textureID);
 	glBindTexture(GL_TEXTURE_CUBE_MAP, textureID);
@@ -62,17 +69,17 @@ void Texture::InitSkyBoxTexture() {
 	}*/
 
 	// Load the cube face - Positive X
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, cubePixels0);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_X, 0, GL_RGB, width0, height0, 0, GL_RGB, GL_UNSIGNED_BYTE, cubePixels0);
 	// Load the cube face - Negative X
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, cubePixels1);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_X, 0, GL_RGB, width1, height1, 0, GL_RGB, GL_UNSIGNED_BYTE, cubePixels1);
 	// Load the cube face - Positive Y
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, cubePixels2);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Y, 0, GL_RGB, width2, height2, 0, GL_RGB, GL_UNSIGNED_BYTE, cubePixels2);
 	// Load the cube face - Negative Y
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, cubePixels3);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Y, 0, GL_RGB, width3, height3, 0, GL_RGB, GL_UNSIGNED_BYTE, cubePixels3);
 	// Load the cube face - Positive Z
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, cubePixels4);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_POSITIVE_Z, 0, GL_RGB, width4, height4, 0, GL_RGB, GL_UNSIGNED_BYTE, cubePixels4);
 	// Load the cube face - Negative Z
-	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, cubePixels5);
+	glTexImage2D(GL_TEXTURE_CUBE_MAP_NEGATIVE_Z, 0, GL_RGB, width5, height5, 0, GL_RGB, GL_UNSIGNED_BYTE, cubePixels5);
 
 	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 

@@ -4,5 +4,5 @@
 
 class SkyBox : public Object3D {
 public:
-	void InitSkyBox(char* model_filename, char* texture_filename, char* vs_filename, char* fs_filename);
+	void InitSkyBox(char* model_filename, char* PX, char* NX, char* PY, char* NY, char* PZ, char* NZ, char* vs_filename, char* fs_filename);
 };

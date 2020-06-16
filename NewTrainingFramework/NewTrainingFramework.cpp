@@ -51,7 +51,15 @@ int Init( ESContext *esContext )
 	// Init 3D Object
 	woman1.InitObject3D("../Resources/Models/Woman1.nfg", "../Resources/Textures/Woman1.tga", "../Resources/Shaders/WomanShaderVS.vs", "../Resources/Shaders/WomanShaderFS.fs");
 	woman2.InitObject3D("../Resources/Models/Woman2.nfg", "../Resources/Textures/Woman2.tga", "../Resources/Shaders/WomanShaderVS.vs", "../Resources/Shaders/WomanShaderFS.fs");
-	skybox.InitSkyBox("../Resources/Models/SkyBox.nfg", "", "../Resources/Shaders/CubeShaderVS.vs", "../Resources/Shaders/CubeShaderFS.fs");
+	skybox.InitSkyBox("../Resources/Models/SkyBox.nfg", 
+		"../Resources/Textures/SkyBox_Right.tga",
+		"../Resources/Textures/SkyBox_Left.tga",
+		"../Resources/Textures/SkyBox_Top.tga",
+		"../Resources/Textures/SkyBox_Bottom.tga",
+		"../Resources/Textures/SkyBox_Front.tga",
+		"../Resources/Textures/SkyBox_Back.tga",
+		"../Resources/Shaders/CubeShaderVS.vs",
+		"../Resources/Shaders/CubeShaderFS.fs");
 
 	// Set Transform of 3D Object
 	woman1.SetTransform(-0.5f, 0.0f, 2.0f, 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f);

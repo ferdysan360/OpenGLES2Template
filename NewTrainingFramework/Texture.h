@@ -9,5 +9,5 @@ public:
 	Texture();
 	~Texture();
 	void InitTexture(char* filename);
-	void InitSkyBoxTexture();
+	void InitSkyBoxTexture(char* PX, char* NX, char* PY, char* NY, char* PZ, char* NZ);
 };
