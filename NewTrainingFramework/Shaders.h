@@ -7,6 +7,7 @@ public:
 	struct Attributes
 	{
 		GLint position;
+		GLint normal;
 	};
 
 	struct Uniforms
@@ -14,6 +15,8 @@ public:
 		GLint texture;
 		GLint textureCoors;
 		GLint mvp_matrix;
+		GLint model;
+		GLint camera;
 	};
 
 private:

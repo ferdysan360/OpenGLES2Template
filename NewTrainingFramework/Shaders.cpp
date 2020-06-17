@@ -22,11 +22,14 @@ int Shaders::Init( char * fileVertexShader, char * fileFragmentShader )
 
 	//finding location of attributes
 	m_attributes.position = glGetAttribLocation( m_program, "a_posL" );
+	m_attributes.normal = glGetAttribLocation(m_program, "a_normal");
 
 	//finding location of uniforms
 	m_uniforms.texture = glGetUniformLocation(m_program, "u_texture");
 	m_uniforms.textureCoors = glGetAttribLocation(m_program, "a_uv");
 	m_uniforms.mvp_matrix = glGetUniformLocation(m_program, "u_world");
+	m_uniforms.model = glGetUniformLocation(m_program, "u_w");
+	m_uniforms.camera = glGetUniformLocation(m_program, "u_camPosition");
 	
 	return 0;
 }

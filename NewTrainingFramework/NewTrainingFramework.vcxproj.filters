@@ -101,5 +101,11 @@
     <None Include="..\Resources\Shaders\CubeShaderVS.vs">
       <Filter>Resources\Shaders</Filter>
     </None>
+    <None Include="..\Resources\Shaders\EnvMapShaderFS.fs">
+      <Filter>Resources\Shaders</Filter>
+    </None>
+    <None Include="..\Resources\Shaders\EnvMapShaderVS.vs">
+      <Filter>Resources\Shaders</Filter>
+    </None>
   </ItemGroup>
 </Project>

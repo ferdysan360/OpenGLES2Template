@@ -119,6 +119,8 @@
     <None Include="..\Readme.doc" />
     <None Include="..\Resources\Shaders\CubeShaderFS.fs" />
     <None Include="..\Resources\Shaders\CubeShaderVS.vs" />
+    <None Include="..\Resources\Shaders\EnvMapShaderFS.fs" />
+    <None Include="..\Resources\Shaders\EnvMapShaderVS.vs" />
     <None Include="..\Resources\Shaders\TriangleShaderFS.fs" />
     <None Include="..\Resources\Shaders\TriangleShaderVS.vs" />
     <None Include="..\Resources\Shaders\WomanShaderFS.fs" />

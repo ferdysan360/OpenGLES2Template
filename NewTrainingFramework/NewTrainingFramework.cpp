@@ -24,7 +24,7 @@ Vertex		squareTriangle2[3];
 
 Object3D woman1;
 Object3D woman2;
-Object3D ball;
+SkyBox ball;
 SkyBox skybox;
 
 Camera camera;
@@ -61,7 +61,15 @@ int Init( ESContext *esContext )
 		"../Resources/Textures/SkyBox_Back.tga",
 		"../Resources/Shaders/CubeShaderVS.vs",
 		"../Resources/Shaders/CubeShaderFS.fs");
-	ball.InitObject3D("../Resources/Models/Ball.nfg", "../Resources/Textures/EnvMap.tga", "../Resources/Shaders/WomanShaderVS.vs", "../Resources/Shaders/WomanShaderFS.fs");
+	ball.InitSkyBox("../Resources/Models/Ball.nfg",
+		"../Resources/Textures/SkyBox_Right.tga",
+		"../Resources/Textures/SkyBox_Left.tga",
+		"../Resources/Textures/SkyBox_Top.tga",
+		"../Resources/Textures/SkyBox_Bottom.tga",
+		"../Resources/Textures/SkyBox_Front.tga",
+		"../Resources/Textures/SkyBox_Back.tga",
+		"../Resources/Shaders/EnvMapShaderVS.vs",
+		"../Resources/Shaders/EnvMapShaderFS.fs");
 
 	// Set Transform of 3D Object
 	woman1.SetTransform(-0.5f, 0.0f, 2.0f, 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f);
@@ -69,6 +77,7 @@ int Init( ESContext *esContext )
 	camera.SetTransform(0.0f, 0.0f, 4.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
 	skybox.SetTransform(0.0f, 0.0f, 0.0f, 10.0f, 10.0f, 10.0f, 0.0f, 0.0f, 0.0f);
 	ball.SetTransform(0.0f, 1.0f, 2.0f, 0.01f, 0.01f, 0.01f, 0.0f, 0.0f, 0.0f);
+	//ball.SetTransform(0.0f, 1.0f, 0.0f, 0.4f, 0.4f, 0.4f, 0.0f, 0.0f, 0.0f);
 
 	//creation of shaders and program 
 	myShaders.Init( "../Resources/Shaders/TriangleShaderVS.vs", "../Resources/Shaders/TriangleShaderFS.fs" );
@@ -335,7 +344,7 @@ void DrawModel(ESContext* esContext)
 	// --------------------------------------------
 
 	// ball
-	glBindTexture(GL_TEXTURE_2D, ball.texture.textureID);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, ball.texture.textureID);
 
 	glUseProgram(ball.shaders.GetProgram());
 
@@ -361,15 +370,33 @@ void DrawModel(ESContext* esContext)
 		cout << "no position" << endl;
 	}
 
-	if (ball.shaders.GetUniforms().textureCoors != -1)
+	if (ball.shaders.GetAttributes().normal != -1)
 	{
-		glEnableVertexAttribArray(ball.shaders.GetUniforms().textureCoors);
-		glVertexAttribPointer(ball.shaders.GetUniforms().textureCoors, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (char*)0 + sizeof(Vector3));
+		glEnableVertexAttribArray(ball.shaders.GetAttributes().normal);
+		glVertexAttribPointer(ball.shaders.GetAttributes().normal, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (char*)0 + sizeof(Vector3) + sizeof(Vector2));
 	}
-	else
-	{
-		cout << "no texture coors!" << endl;
+	else {
+		cout << "no normal" << endl;
 	}
+
+	if (ball.shaders.GetUniforms().model != -1) {
+		glUniformMatrix4fv(ball.shaders.GetUniforms().model, 1, GL_FALSE, World4.m[0]);
+	}
+	else {
+		cout << "no model matrix!" << endl;
+	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, camera.model.m_VBO);
+
+	if (ball.shaders.GetUniforms().camera != -1) {
+		glEnableVertexAttribArray(ball.shaders.GetUniforms().camera);
+		glVertexAttribPointer(ball.shaders.GetUniforms().camera, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	}
+	else {
+		cout << "no camera pos!" << endl;
+	}
+
+	glBindBuffer(GL_ARRAY_BUFFER, ball.model.m_VBO);
 
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ball.model.m_IBO);
 
@@ -378,7 +405,7 @@ void DrawModel(ESContext* esContext)
 
 	glBindBuffer(GL_ARRAY_BUFFER, 0);
 	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
+	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
 
 	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
 }
