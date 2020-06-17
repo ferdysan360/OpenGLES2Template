@@ -24,6 +24,7 @@ Vertex		squareTriangle2[3];
 
 Object3D woman1;
 Object3D woman2;
+Object3D terrain;
 SkyBox ball;
 SkyBox skybox;
 
@@ -70,6 +71,7 @@ int Init( ESContext *esContext )
 		"../Resources/Textures/SkyBox_Back.tga",
 		"../Resources/Shaders/EnvMapShaderVS.vs",
 		"../Resources/Shaders/EnvMapShaderFS.fs");
+	terrain.InitObject3D("../Resources/Models/Terrain.nfg", "../Resources/Textures/Dirt.tga", "../Resources/Shaders/WomanShaderVS.vs", "../Resources/Shaders/WomanShaderFS.fs");
 
 	// Set Transform of 3D Object
 	woman1.SetTransform(-0.5f, 0.0f, 2.0f, 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f);
@@ -78,6 +80,7 @@ int Init( ESContext *esContext )
 	skybox.SetTransform(0.0f, 0.0f, 0.0f, 10.0f, 10.0f, 10.0f, 0.0f, 0.0f, 0.0f);
 	ball.SetTransform(0.0f, 1.0f, 2.0f, 0.01f, 0.01f, 0.01f, 0.0f, 0.0f, 0.0f);
 	//ball.SetTransform(0.0f, 1.0f, 0.0f, 0.4f, 0.4f, 0.4f, 0.0f, 0.0f, 0.0f);
+	terrain.SetTransform(0.0f, -7.0f, 0.0f, 0.15f, 0.15f, 0.15f, 0.0f, 0.0f, 0.0f);
 
 	//creation of shaders and program 
 	myShaders.Init( "../Resources/Shaders/TriangleShaderVS.vs", "../Resources/Shaders/TriangleShaderFS.fs" );
@@ -195,217 +198,18 @@ void DrawModel(ESContext* esContext)
 {
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
-	Matrix World1 = woman1.GetWorldMatrix();
 	Matrix View = camera.GetViewMatrix();
 	Matrix Projection = camera.GetProjectionMatrix();
 
-	// woman 1
-	glBindTexture(GL_TEXTURE_2D, woman1.texture.textureID);
+	woman1.Draw(View, Projection);
 
-	glUseProgram(woman1.shaders.GetProgram());
+	woman2.Draw(View, Projection);
 
-	glUniform1i(woman1.shaders.GetUniforms().texture, 0);
+	skybox.Draw(View, Projection);
 
-	glBindBuffer(GL_ARRAY_BUFFER, woman1.model.m_VBO);
+	ball.DrawReflection(View, Projection, camera);
 
-	Matrix MVPMatrix1 = World1 * View * Projection;
-	if (woman1.shaders.GetUniforms().mvp_matrix != -1) {
-		glUniformMatrix4fv(woman1.shaders.GetUniforms().mvp_matrix, 1, GL_FALSE, MVPMatrix1.m[0]);
-	}
-	else {
-		cout << "no matrix!" << endl;
-	}
-	
-
-	if (woman1.shaders.GetAttributes().position != -1)
-	{
-		glEnableVertexAttribArray(woman1.shaders.GetAttributes().position);
-		glVertexAttribPointer(woman1.shaders.GetAttributes().position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-	}
-	else {
-		cout << "no position" << endl;
-	}
-
-	if (woman1.shaders.GetUniforms().textureCoors != -1)
-	{
-		glEnableVertexAttribArray(woman1.shaders.GetUniforms().textureCoors);
-		glVertexAttribPointer(woman1.shaders.GetUniforms().textureCoors, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (char*)0 + sizeof(Vector3));
-	}
-	else
-	{
-		cout << "no texture coors!" << endl;
-	}
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, woman1.model.m_IBO);
-
-	glDrawElements(GL_TRIANGLES, woman1.model.m_indicesCount, GL_UNSIGNED_INT, 0);
-	//glDrawArrays(GL_TRIANGLES, 0, woman1.m_verticesCount);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	// -----------------------------------
-
-	// woman 2
-	glBindTexture(GL_TEXTURE_2D, woman2.texture.textureID);
-
-	glUseProgram(woman2.shaders.GetProgram());
-
-	glUniform1i(woman2.shaders.GetUniforms().texture, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, woman2.model.m_VBO);
-
-	Matrix World2 = woman2.GetWorldMatrix();
-	Matrix MVPMatrix2 = World2 * View * Projection;
-	if (woman2.shaders.GetUniforms().mvp_matrix != -1) {
-		glUniformMatrix4fv(woman2.shaders.GetUniforms().mvp_matrix, 1, GL_FALSE, MVPMatrix2.m[0]);
-	}
-	else {
-		cout << "no matrix!" << endl;
-	}
-
-	if (woman2.shaders.GetAttributes().position != -1)
-	{
-		glEnableVertexAttribArray(woman2.shaders.GetAttributes().position);
-		glVertexAttribPointer(woman2.shaders.GetAttributes().position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-	}
-	else {
-		cout << "no position" << endl;
-	}
-
-	if (woman2.shaders.GetUniforms().textureCoors != -1)
-	{
-		glEnableVertexAttribArray(woman2.shaders.GetUniforms().textureCoors);
-		glVertexAttribPointer(woman2.shaders.GetUniforms().textureCoors, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (char*)0 + sizeof(Vector3));
-	}
-	else
-	{
-		cout << "no texture coors!" << endl;
-	}
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, woman2.model.m_IBO);
-
-	glDrawElements(GL_TRIANGLES, woman2.model.m_indicesCount, GL_UNSIGNED_INT, 0);
-	//glDrawArrays(GL_TRIANGLES, 0, woman2.m_verticesCount);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindTexture(GL_TEXTURE_2D, 0);
-
-	// -----------------------------------
-
-	// skybox
-	glBindTexture(GL_TEXTURE_CUBE_MAP, skybox.texture.textureID);
-
-	glUseProgram(skybox.shaders.GetProgram());
-
-	glUniform1i(skybox.shaders.GetUniforms().texture, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, skybox.model.m_VBO);
-
-	Matrix World3 = skybox.GetWorldMatrix();
-	Matrix MVPMatrix3 = World3 * View * Projection;
-	if (skybox.shaders.GetUniforms().mvp_matrix != -1) {
-		glUniformMatrix4fv(skybox.shaders.GetUniforms().mvp_matrix, 1, GL_FALSE, MVPMatrix3.m[0]);
-	}
-	else {
-		cout << "no matrix!" << endl;
-	}
-
-	if (skybox.shaders.GetAttributes().position != -1)
-	{
-		glEnableVertexAttribArray(skybox.shaders.GetAttributes().position);
-		glVertexAttribPointer(skybox.shaders.GetAttributes().position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-	}
-	else {
-		cout << "no position" << endl;
-	}
-
-	/*if (skybox.shaders.GetUniforms().textureCoors != -1)
-	{
-		glEnableVertexAttribArray(skybox.shaders.GetUniforms().textureCoors);
-		glVertexAttribPointer(skybox.shaders.GetUniforms().textureCoors, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (char*)0 + sizeof(Vector3));
-	}
-	else
-	{
-		cout << "no texture coors!" << endl;
-	}*/
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, skybox.model.m_IBO);
-
-	glDrawElements(GL_TRIANGLES, skybox.model.m_indicesCount, GL_UNSIGNED_INT, 0);
-	//glDrawArrays(GL_TRIANGLES, 0, skybox.m_verticesCount);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
-
-	// --------------------------------------------
-
-	// ball
-	glBindTexture(GL_TEXTURE_CUBE_MAP, ball.texture.textureID);
-
-	glUseProgram(ball.shaders.GetProgram());
-
-	glUniform1i(ball.shaders.GetUniforms().texture, 0);
-
-	glBindBuffer(GL_ARRAY_BUFFER, ball.model.m_VBO);
-
-	Matrix World4 = ball.GetWorldMatrix();
-	Matrix MVPMatrix4 = World4 * View * Projection;
-	if (ball.shaders.GetUniforms().mvp_matrix != -1) {
-		glUniformMatrix4fv(ball.shaders.GetUniforms().mvp_matrix, 1, GL_FALSE, MVPMatrix4.m[0]);
-	}
-	else {
-		cout << "no matrix!" << endl;
-	}
-
-	if (ball.shaders.GetAttributes().position != -1)
-	{
-		glEnableVertexAttribArray(ball.shaders.GetAttributes().position);
-		glVertexAttribPointer(ball.shaders.GetAttributes().position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-	}
-	else {
-		cout << "no position" << endl;
-	}
-
-	if (ball.shaders.GetAttributes().normal != -1)
-	{
-		glEnableVertexAttribArray(ball.shaders.GetAttributes().normal);
-		glVertexAttribPointer(ball.shaders.GetAttributes().normal, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), (char*)0 + sizeof(Vector3) + sizeof(Vector2));
-	}
-	else {
-		cout << "no normal" << endl;
-	}
-
-	if (ball.shaders.GetUniforms().model != -1) {
-		glUniformMatrix4fv(ball.shaders.GetUniforms().model, 1, GL_FALSE, World4.m[0]);
-	}
-	else {
-		cout << "no model matrix!" << endl;
-	}
-
-	glBindBuffer(GL_ARRAY_BUFFER, camera.model.m_VBO);
-
-	if (ball.shaders.GetUniforms().camera != -1) {
-		glEnableVertexAttribArray(ball.shaders.GetUniforms().camera);
-		glVertexAttribPointer(ball.shaders.GetUniforms().camera, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
-	}
-	else {
-		cout << "no camera pos!" << endl;
-	}
-
-	glBindBuffer(GL_ARRAY_BUFFER, ball.model.m_VBO);
-
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ball.model.m_IBO);
-
-	glDrawElements(GL_TRIANGLES, ball.model.m_indicesCount, GL_UNSIGNED_INT, 0);
-	//glDrawArrays(GL_TRIANGLES, 0, ball.m_verticesCount);
-
-	glBindBuffer(GL_ARRAY_BUFFER, 0);
-	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
-	glBindTexture(GL_TEXTURE_CUBE_MAP, 0);
+	terrain.Draw(View, Projection);
 
 	eglSwapBuffers(esContext->eglDisplay, esContext->eglSurface);
 }

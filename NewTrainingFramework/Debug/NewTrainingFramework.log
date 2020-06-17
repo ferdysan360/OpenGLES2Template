@@ -1,3 +1,4 @@
 ﻿  NewTrainingFramework.cpp
+Camera.obj : warning LNK4075: ignoring '/EDITANDCONTINUE' due to '/SAFESEH' specification
   NewTrainingFramework.vcxproj -> C:\Users\ferdy\Documents\Gameloft\OpenGL ES 2.0\OpenGLES2Template\\BIN\NewTrainingFramework.exe
   NewTrainingFramework.vcxproj -> C:\Users\ferdy\Documents\Gameloft\OpenGL ES 2.0\OpenGLES2Template\\BIN\NewTrainingFramework.pdb (Full PDB)

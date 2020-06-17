@@ -15,4 +15,6 @@ public:
 	void InitObject3D(char* model_filename, char* texture_filename, char* vs_filename, char* fs_filename);
 	void SetTransform(GLfloat posX, GLfloat posY, GLfloat posZ, GLfloat scaleX, GLfloat scaleY, GLfloat scaleZ, GLfloat RotX, GLfloat RotY, GLfloat RotZ);
 	Matrix GetWorldMatrix();
+
+	void Draw(Matrix View, Matrix Projection);
 };

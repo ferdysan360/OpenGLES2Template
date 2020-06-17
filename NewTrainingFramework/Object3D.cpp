@@ -45,3 +45,52 @@ Matrix Object3D::GetWorldMatrix() {
 	World = Scale * RotZ * RotX * RotY * Translate;
 	return World;
 }
+
+void Object3D::Draw(Matrix View, Matrix Projection) {
+	// woman 1
+	glBindTexture(GL_TEXTURE_2D, this->texture.textureID);
+
+	glUseProgram(this->shaders.GetProgram());
+
+	glUniform1i(this->shaders.GetUniforms().texture, 0);
+
+	glBindBuffer(GL_ARRAY_BUFFER, this->model.m_VBO);
+
+	Matrix World1 = this->GetWorldMatrix();
+	Matrix MVPMatrix1 = World1 * View * Projection;
+	if (this->shaders.GetUniforms().mvp_matrix != -1) {
+		glUniformMatrix4fv(this->shaders.GetUniforms().mvp_matrix, 1, GL_FALSE, MVPMatrix1.m[0]);
+	}
+	else {
+		cout << "no matrix!" << endl;
+	}
+
+
+	if (this->shaders.GetAttributes().position != -1)
+	{
+		glEnableVertexAttribArray(this->shaders.GetAttributes().position);
+		glVertexAttribPointer(this->shaders.GetAttributes().position, 3, GL_FLOAT, GL_FALSE, sizeof(Vertex), 0);
+	}
+	else {
+		cout << "no position" << endl;
+	}
+
+	if (this->shaders.GetUniforms().textureCoors != -1)
+	{
+		glEnableVertexAttribArray(this->shaders.GetUniforms().textureCoors);
+		glVertexAttribPointer(this->shaders.GetUniforms().textureCoors, 2, GL_FLOAT, GL_FALSE, sizeof(Vertex), (char*)0 + sizeof(Vector3));
+	}
+	else
+	{
+		cout << "no texture coors!" << endl;
+	}
+
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, this->model.m_IBO);
+
+	glDrawElements(GL_TRIANGLES, this->model.m_indicesCount, GL_UNSIGNED_INT, 0);
+	//glDrawArrays(GL_TRIANGLES, 0, this->m_verticesCount);
+
+	glBindBuffer(GL_ARRAY_BUFFER, 0);
+	glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, 0);
+	glBindTexture(GL_TEXTURE_2D, 0);
+}
