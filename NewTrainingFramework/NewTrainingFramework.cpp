@@ -15,6 +15,8 @@
 #include <string>
 using namespace std;
 
+bool keys[12];
+
 Shaders		myShaders;
 
 Vertex		triangle1[3];
@@ -77,9 +79,8 @@ int Init( ESContext *esContext )
 	woman1.SetTransform(-0.5f, 0.0f, 2.0f, 0.5f, 0.5f, 0.5f, 0.0f, 0.0f, 0.0f);
 	woman2.SetTransform(0.5f, 0.0f, 2.0f, 0.3f, 0.3f, 0.3f, 0.0f, 0.0f, 0.0f);
 	camera.SetTransform(0.0f, 0.0f, 4.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
-	skybox.SetTransform(0.0f, 0.0f, 0.0f, 10.0f, 10.0f, 10.0f, 0.0f, 0.0f, 0.0f);
+	skybox.SetTransform(0.0f, 0.0f, 4.0f, 1.0f, 1.0f, 1.0f, 0.0f, 0.0f, 0.0f);
 	ball.SetTransform(0.0f, 1.0f, 2.0f, 0.01f, 0.01f, 0.01f, 0.0f, 0.0f, 0.0f);
-	//ball.SetTransform(0.0f, 1.0f, 0.0f, 0.4f, 0.4f, 0.4f, 0.0f, 0.0f, 0.0f);
 	terrain.SetTransform(0.0f, -7.0f, 0.0f, 0.15f, 0.15f, 0.15f, 0.0f, 0.0f, 0.0f);
 
 	//creation of shaders and program 
@@ -201,11 +202,13 @@ void DrawModel(ESContext* esContext)
 	Matrix View = camera.GetViewMatrix();
 	Matrix Projection = camera.GetProjectionMatrix();
 
+	glDisable(GL_DEPTH_TEST);
+	skybox.Draw(View, Projection);
+	glEnable(GL_DEPTH_TEST);
+
 	woman1.Draw(View, Projection);
 
 	woman2.Draw(View, Projection);
-
-	skybox.Draw(View, Projection);
 
 	ball.DrawReflection(View, Projection, camera);
 
@@ -218,59 +221,155 @@ void Update( ESContext *esContext, float deltaTime )
 {
 	woman1.transform.rotation.y += 1.0f * deltaTime;
 	woman2.transform.rotation.z += 1.0f * deltaTime;
+	
+	if (keys[0]) {
+		camera.transform.position.y += 1.0f * deltaTime;
+		skybox.transform.position.y += 1.0f * deltaTime;
+	}
+	if (keys[1]) {
+		camera.transform.position.y -= 1.0f * deltaTime;
+		skybox.transform.position.y -= 1.0f * deltaTime;
+	}
+	if (keys[2])
+	{
+		Vector4 left;
+		left.x = -1.0f * deltaTime;
+		left.y = 0.0f;
+		left.z = 0.0f;
+		left.w = 1.0f;
+
+		Matrix world = camera.GetWorldMatrix();
+		Vector4 new_pos = left * world;
+		camera.transform.position.x = new_pos.x;
+		camera.transform.position.y = new_pos.y;
+		camera.transform.position.z = new_pos.z;
+
+		skybox.transform.position.x = new_pos.x;
+		skybox.transform.position.y = new_pos.y;
+		skybox.transform.position.z = new_pos.z;
+	}
+	if (keys[3])
+	{
+		Vector4 right;
+		right.x = 1.0f * deltaTime;
+		right.y = 0.0f;
+		right.z = 0.0f;
+		right.w = 1.0f;
+
+		Matrix world = camera.GetWorldMatrix();
+		Vector4 new_pos = right * world;
+		camera.transform.position.x = new_pos.x;
+		camera.transform.position.y = new_pos.y;
+		camera.transform.position.z = new_pos.z;
+
+		skybox.transform.position.x = new_pos.x;
+		skybox.transform.position.y = new_pos.y;
+		skybox.transform.position.z = new_pos.z;
+	}
+	if (keys[4])
+	{
+		Vector4 forward;
+		forward.x = 0.0f;
+		forward.y = 0.0f;
+		forward.z = 1.0f * deltaTime;
+		forward.w = 1.0f;
+
+		Matrix world = camera.GetWorldMatrix();
+		Vector4 new_pos = forward * world;
+		camera.transform.position.x = new_pos.x;
+		camera.transform.position.y = new_pos.y;
+		camera.transform.position.z = new_pos.z;
+
+		skybox.transform.position.x = new_pos.x;
+		skybox.transform.position.y = new_pos.y;
+		skybox.transform.position.z = new_pos.z;
+	}
+	if (keys[5])
+	{
+		Vector4 forward;
+		forward.x = 0.0f;
+		forward.y = 0.0f;
+		forward.z = -1.0f * deltaTime;
+		forward.w = 1.0f;
+
+		Matrix world = camera.GetWorldMatrix();
+		Vector4 new_pos = forward * world;
+		camera.transform.position.x = new_pos.x;
+		camera.transform.position.y = new_pos.y;
+		camera.transform.position.z = new_pos.z;
+
+		skybox.transform.position.x = new_pos.x;
+		skybox.transform.position.y = new_pos.y;
+		skybox.transform.position.z = new_pos.z;
+	}
+	if (keys[6]) {
+		camera.transform.rotation.x += 1.0f * deltaTime;
+	}
+	if (keys[7])
+		camera.transform.rotation.x -= 1.0f * deltaTime;
+	if (keys[8])
+		camera.transform.rotation.y += 1.0f * deltaTime;
+	if (keys[9])
+		camera.transform.rotation.y -= 1.0f * deltaTime;
+	if (keys[10])
+		camera.transform.rotation.z += 1.0f * deltaTime;
+	if (keys[11])
+		camera.transform.rotation.z -= 1.0f * deltaTime;
 }
 
 void Key( ESContext *esContext, unsigned char key, bool bIsPressed )
 {
 	if (bIsPressed) {
-		if (GetAsyncKeyState('W'))
-			camera.transform.position.y += 0.1f;
-		if (GetAsyncKeyState('S'))
-			camera.transform.position.y -= 0.1f;
-		if (GetAsyncKeyState('A'))
-			camera.transform.position.x -= 0.1f;
-		if (GetAsyncKeyState('D'))
-			camera.transform.position.x += 0.1f;
-		if (GetAsyncKeyState('Q'))
-		{
-			Vector4 forward;
-			forward.x = 0.0f;
-			forward.y = 0.0f;
-			forward.z = 0.1f;
-			forward.w = 1.0f;
-
-			Matrix world = camera.GetWorldMatrix();
-			Vector4 new_pos = forward * world;
-			camera.transform.position.x = new_pos.x;
-			camera.transform.position.y = new_pos.y;
-			camera.transform.position.z = new_pos.z;
-		}
-		if (GetAsyncKeyState('E'))
-		{
-			Vector4 forward;
-			forward.x = 0.0f;
-			forward.y = 0.0f;
-			forward.z = -0.1f;
-			forward.w = 1.0f;
-
-			Matrix world = camera.GetWorldMatrix();
-			Vector4 new_pos = forward * world;
-			camera.transform.position.x = new_pos.x;
-			camera.transform.position.y = new_pos.y;
-			camera.transform.position.z = new_pos.z;
-		}
-		if (GetAsyncKeyState(VK_UP))
-			camera.transform.rotation.x += 0.05f;
-		if (GetAsyncKeyState(VK_DOWN))
-			camera.transform.rotation.x -= 0.05f;
-		if (GetAsyncKeyState(VK_LEFT))
-			camera.transform.rotation.y += 0.05f;
-		if (GetAsyncKeyState(VK_RIGHT))
-			camera.transform.rotation.y -= 0.05f;
-		if (GetAsyncKeyState('Z'))
-			camera.transform.rotation.z += 0.05f;
-		if (GetAsyncKeyState('C'))
-			camera.transform.rotation.z -= 0.05f;
+		if (key == 'W')
+			keys[0] = true;
+		if (key == 'S')
+			keys[1] = true;
+		if (key == 'A')
+			keys[2] = true;		
+		if (key == 'D')
+			keys[3] = true;
+		if (key == 'Q')
+			keys[4] = true;
+		if (key == 'E')
+			keys[5] = true;
+		if (key == VK_UP)
+			keys[6] = true;
+		if (key == VK_DOWN)
+			keys[7] = true;
+		if (key == VK_LEFT)
+			keys[8] = true;
+		if (key == VK_RIGHT)
+			keys[9] = true;
+		if (key == 'Z')
+			keys[10] = true;
+		if (key == 'C')
+			keys[11] = true;
+	}
+	else {
+		if (key == 'W')
+			keys[0] = false;
+		if (key == 'S')
+			keys[1] = false;
+		if (key == 'A')
+			keys[2] = false;
+		if (key == 'D')
+			keys[3] = false;
+		if (key == 'Q')
+			keys[4] = false;
+		if (key == 'E')
+			keys[5] = false;
+		if (key == VK_UP)
+			keys[6] = false;
+		if (key == VK_DOWN)
+			keys[7] = false;
+		if (key == VK_LEFT)
+			keys[8] = false;
+		if (key == VK_RIGHT)
+			keys[9] = false;
+		if (key == 'Z')
+			keys[10] = false;
+		if (key == 'C')
+			keys[11] = false;
 	}
 }
 

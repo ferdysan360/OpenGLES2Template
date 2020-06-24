@@ -7,9 +7,11 @@
 
 class Object3D {
 public:
-	Model model;
-	Texture texture;
-	Shaders shaders;
+	Object3D();
+
+	Model *model;
+	Texture *texture;
+	Shaders *shaders;
 	Transform transform;
 
 	void InitObject3D(char* model_filename, char* texture_filename, char* vs_filename, char* fs_filename);
